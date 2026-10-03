@@ -259,11 +259,10 @@ enough to gate every iteration.
 
 ## 6. What this design does not claim
 
-- **It does not claim the ladder will move.** Serving-path choice currently
-  dominates the ladder signal — the same checkpoint scored 851.5, 305.9 and 133.1
-  in three serving packages (the cause of the drop was not recorded). This experiment
-  holds the serving path constant and measures the weights. Whether a better policy survives packaging is a separate
-  question with its own separate experiment.
+- **It does not claim the ladder will move.** The same weights scored 851.5, 305.9
+  and 133.1 in three serving packages, a 718-point spread of unrecorded cause. This
+  experiment holds the serving path constant and measures the weights. Whether a
+  better policy survives packaging is a separate question with its own experiment.
 - **It does not claim the cardinality head will help.** It claims the champion
   cannot express cardinality, that the corpus cannot teach it, and that outcomes
   can. `G-HEAD` decides whether that is worth anything.

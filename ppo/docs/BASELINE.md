@@ -115,12 +115,13 @@ The engine signals "you may decline" with `minCount == 0`. Measured on the corpu
 
 ```
 minCount == 0 offered      145,834 decisions   13.99%
-pass TAKEN by strong humans   20.23% of offers
+pass TAKEN by strong humans   20.23% of offers   (UNRECONCILED: 4.20% elsewhere; see top)
 minCount absent from a prompt  0 of 22,169     (it is never missing)
 ```
 
-So on ~1 decision in 7 the agent has **no representation of the legal option that
-strong players take one time in five**. Fixed in `main_v8.py`, which the champion
+So on ~1 decision in 7 the agent has **no representation of the legal option to
+decline**, which strong players take somewhere between 4.20% and 20.23% of the time:
+the two recorded rates have not been reconciled. Fixed in `main_v8.py`, which the champion
 package predates.
 
 ### 2b. It plays random moves on any exception — silently
@@ -137,7 +138,7 @@ defect class recorded as "20/32 packages played RANDOM behind a green gate".
 
 ### Why this does not change the PPO plan
 
-It is tempting to fix serving first. The ladder says do not trust that instinct:
+It is tempting to fix serving first. The ladder record argues for caution:
 
 ```
 FIXED-312   (v6 serving)   851.5
@@ -152,9 +153,9 @@ recorded, and `main_v7.py` with every serving flag off computes the same forward
 v6, so the cause of the drop is **not recorded**. Read them as "same weights, different
 serving package", not as a measured serving-path effect.
 
-Same checkpoint, three serving packages, a 718-point spread. **Serving-path choice
-currently dominates the ladder signal.** Therefore the PPO experiment must hold the
-serving path *constant* and vary only the weights, or its result will be unreadable.
+Same weights, different packages, a 718-point spread of unrecorded cause. Because a
+packaging change alone can move the ladder that far, the PPO experiment holds the
+serving path *constant* and varies only the weights, or its result would be unreadable.
 The serving fix is a separate, later, one-variable experiment.
 
 ---

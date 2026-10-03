@@ -5,7 +5,8 @@
 #
 # 1. Recomputes the results table from results/results.csv with report/analyze_results.py
 #    and fails unless it equals the committed results/analysis_output.txt byte for byte.
-# 2. Prints the headline: the final standing and the vacuous value gate, with sources.
+# 2. Prints the headline: the final standing, the false-green parity incident, and the
+#    value head against a zero-skill constant, with sources.
 # 3. Recovers the PPO head-to-head game counts from their recorded intervals.
 # 4. If PTCG_PYTHON points at an interpreter with numpy and torch, runs the NumPy serving
 #    model on SYNTHETIC boards and shows the compute-parity check catching a wrong
@@ -35,8 +36,10 @@ print("Final Simulation standing of %s: rank %s of %s, score %s (source: %s)." %
     s["submitted_agent"], format(s["rank"], ","), format(s["ranked_out_of"], ","),
     s["final_simulation_score"], "results/final_standing.json"))
 '
-echo "A value gate of 'Brier below 0.5' admits zero skill: the constant predictor scores"
-echo "0.487022 on 17,392 validation rows (the Brier line of the table above)."
+echo "A parity check built the wrong way read green while two submissions scored 256.7 and"
+echo "183.1 against an 800.5 champion (imitation/gates/gate_compute_parity.py, docstring)."
+echo "The value head scored Brier 0.5771, worse than the 0.487022 a zero-skill constant scores"
+echo "on 17,392 validation rows (the Brier line above; docs/details.md, 'The value head')."
 
 echo
 echo "== 3. PPO head-to-head: game counts recovered from the recorded intervals =="
@@ -49,7 +52,7 @@ if [ -n "${PTCG_PYTHON:-}" ] && "$PTCG_PYTHON" -c "import numpy, torch" >/dev/nu
 else
   echo "Skipped: set PTCG_PYTHON to an interpreter with numpy and torch to run"
   echo "demo/model_demo.py (about 1 s): the NumPy forward scores a board's legal options,"
-  echo "and the compute-parity check passes the trained serving mode and rejects a wrong one."
+  echo "a parity check built the wrong way reads a false PASS, and the correct one catches it."
 fi
 
 echo

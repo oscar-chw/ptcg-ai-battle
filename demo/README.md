@@ -54,9 +54,10 @@ and nothing in this repository depends on it.
 
 `model_demo.py` needs numpy and torch (`PTCG_PYTHON=... bash scripts/demo.sh` runs it). On a
 tiny SYNTHETIC model and SYNTHETIC boards it prints the NumPy serving forward's action
-probabilities beside torch's, and the compute-parity check over 64 boards: PASS for the
-serving mode the weights were trained with, FAIL for a wrong one. It exits 1 if either
-outcome is not as expected. No real weights or engine data are involved, so it says
+probabilities beside torch's, then three parity checks over 64 boards: a check whose torch
+reference is built the same wrong way as the serving code reads a false PASS; the correct
+check FAILs the wrong serving mode and PASSes the trained one. It exits 1 if any row comes
+out otherwise. No real weights or engine data are involved, so it says
 nothing about playing strength.
 
 ## Tests

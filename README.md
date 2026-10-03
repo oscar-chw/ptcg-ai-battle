@@ -9,11 +9,14 @@ Simulation leaderboard, score 709.1**, no medal
 submitted to the Kaggle strategy track
 ([write-up](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle-challenge-strategy/writeups/from-imitation-to-reliable-play-a-ptcg-agent-stud)).
 
-**The value-head gate "Brier below 0.5" would pass a model with zero skill:** a constant
-predictor that knows only the class frequencies scores 0.487022 on 17,392 validation rows.
-`scripts/demo.sh` recomputes it from [results/results.csv](results/results.csv). The
-repository is about catching failures like that before they ship: four gates check the
-built package, and every win rate carries an interval and a control.
+**A parity check built the wrong way read green while two submissions scored 256.7 and
+183.1 against the team's 800.5 champion.** The serving forward attended over padding the
+weights were trained to mask, and the check collated its torch reference the same wrong
+way, so both sides agreed ([gate_compute_parity.py](imitation/gates/gate_compute_parity.py),
+docstring). [demo/model_demo.py](demo/model_demo.py) reproduces that false green on a
+SYNTHETIC model, next to the corrected check catching it. The repository is about catching
+failures like that before they ship: four gates check the built package, and every win
+rate carries an interval and a control.
 
 ```bash
 bash scripts/demo.sh    # standard-library python3, no engine: results table, headline, PPO game counts
@@ -35,11 +38,11 @@ official simulator supplies each observation and its legal options. A submission
 package (`main.py`, a deck, weights) run in a sandbox where a deep-learning framework is
 not guaranteed, and it is ranked on a ladder of simulated games.
 
-The hard part was knowing what was deployed. Two submissions scored 256.7 and 183.1 against
-an 800.5 champion because the serving forward attended over padding the weights were
-trained to mask, while a parity check built the same wrong way read green
-([gate_compute_parity.py](imitation/gates/gate_compute_parity.py), docstring). So the
-project's real subject became *how to know a result is true*.
+The hard part was knowing what was deployed. Besides the false-green parity check above, a
+second build path re-shipped a fixed defect 19 hours later (260.9 and 156.9 against 800.5),
+and a sweep of 32 packages found 20 that raised inside the sandbox and silently played
+random moves ([imitation/README.md](imitation/README.md), "Packaging"). So the project's
+real subject became *how to know a result is true*.
 
 ## Approach (methods and algorithms)
 
@@ -75,14 +78,15 @@ synthetic. Intervals are nominal Wilson 95%.
 | Result | Value | Source |
 |---|---|---|
 | **Final standing, `BEST1_fixed`** | **rank 2,043 of 6,807; score 709.1** | [final_standing.json](results/final_standing.json) |
-| Value-head gate | constant predictor Brier 0.487022 on 17,392 rows, so "below 0.5" admits zero skill | [analysis_output.txt](results/analysis_output.txt) |
+| Value head vs a zero-skill constant | value head Brier 0.5771; a class-frequency constant scores 0.487022 on 17,392 validation rows with no draws, so the head did worse than no skill (the team had compared it with a 0.6667 three-class reference) | [analysis_output.txt](results/analysis_output.txt), [details](docs/details.md#the-value-head) |
 | ISMCTS, rejected | 111/400 = 27.75% [23.59, 32.33] vs same-deck baseline; 108/400 cross-deck | [analysis_output.txt](results/analysis_output.txt) |
 | PPO vs frozen parent (never submitted) | 0.8104 [0.756, 0.855] on 240 games; control, parent vs itself, 0.4875 [0.419, 0.556] on 200 | [ppo_RESULTS.md](results/ppo_RESULTS.md), [ppo_counts.py](figures/ppo_counts.py) |
 
 PPO caveats: the game counts were not recorded; they are the only ones the intervals allow
 (194.5/240, 97.5/200), and the half-points mean draws scored 0.5 there, not 0 as in the
 battery rows. 0.8104 is the best of three arms on the same opponent; Bonferroni over 3 gives
-[0.743, 0.863]. Against an opponent never trained against: PPO 0.7167, champion 0.5333.
+[0.743, 0.863]. Against an opponent never trained against: PPO 0.7167 [0.663, 0.765],
+champion 0.5333 [0.409, 0.654] on only about 60 games.
 
 [docs/details.md](docs/details.md) has the full table, the negative results, per-deck
 accuracies with the one recorded baseline, and one checkpoint that scored 851.5, 305.9 and
@@ -98,7 +102,7 @@ bash scripts/check.sh    # no engine; observed about 1 s without torch, about 20
 `demo.sh` fails unless the recomputed table equals
 [results/analysis_output.txt](results/analysis_output.txt). With `PTCG_PYTHON` set it also runs
 [demo/model_demo.py](demo/model_demo.py): the NumPy serving forward scores SYNTHETIC boards
-beside torch, and the parity check catches a wrong serving mode. `check.sh` prints suites it
+beside torch, a badly built parity check reads a false PASS, and the correct one catches it. `check.sh` prints suites it
 cannot run as SKIPPED, never passed. [CI](.github/workflows/ci.yml) is configured to run both,
 installing numpy and CPU torch on the runner; it has not run yet (not pushed). Timings are
 single local observations.
@@ -130,8 +134,8 @@ stamped serving flags, then one script that builds and gates the package.
   copied a player who won 6.2% of games); the team's self-play loop had shown no learning gain.
 - **NumPy at inference.** Torch was not guaranteed in the sandbox; the cost is two forwards
   that can drift, which the parity and serve-stamp gates police.
-- **No search shipped.** ISMCTS lost, Gumbel showed nothing, the value head was too weak to
-  steer search, and search made repeated runs disagree (132/200 outcomes).
+- **No search shipped.** ISMCTS lost, Gumbel showed nothing, the value head scored worse
+  than a constant predictor, and search made repeated runs disagree (132/200 outcomes).
 - **PPO never submitted.** No reason is recorded; the opponent pool was not wired in and the
   offline harness failed its own control.
 - **A counted serving fallback.** The team's file played a random legal move on any exception,
@@ -163,8 +167,8 @@ Sources: [docs/details.md](docs/details.md).
 Candidate lessons from conclusions the records state; drafts for Oscar to confirm or strike.
 
 1. **A threshold can be met by a model with no skill.** The constant predictor scores Brier
-   0.487022, so a gate of "Brier below 0.5" admits zero skill; a value-loss gate needs that
-   baseline beside it ([report/REPORT.md](report/REPORT.md) section 4).
+   0.487022, so a gate of "Brier below 0.5" would admit zero skill; a value-loss gate needs
+   that baseline beside it ([report/REPORT.md](report/REPORT.md) section 4).
 
    DRAFT — Oscar to confirm
 

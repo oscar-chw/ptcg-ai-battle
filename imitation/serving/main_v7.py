@@ -36,9 +36,13 @@ exactly as v6 did rather than silently changing.
 With all three off, v7's forward is arithmetically identical to v6's: the mask is
 all-True so no additive term is built at all, and the policy mask is empty.
 
-No search. The value head is deliberately unused — it measured Brier 0.5771
-against a 0.6667 uniform reference, so steering a search with it would be
-steering by noise.
+No search. The value head is deliberately unused — it measured Brier 0.5771 on
+the held-out split of the 926-game Sixth Sense corpus. The 0.6667 three-class
+uniform reference it was first compared with is the wrong one, since that data has
+no draws: the class-frequency constant on the corpus's 185-game validation split
+scores 0.487022, so the value head did WORSE than a zero-skill predictor (the
+team's later win-probability notes say the same). Steering a search with it would
+be steering by worse than noise.
 
 Inference is hand-written NumPy. Torch is not guaranteed in the sandbox, and
 both prior neural submissions from this project returned ERROR; removing the

@@ -19,7 +19,8 @@ row are not on the same scale.
 | Development validation top-1 by deck | Marnie/Froslass 0.7785 against the 0.5943 dense-scorer baseline, which was measured on the Marnie episode split. Alakazam 0.7024 and Mega Lopunny 0.6332: no baseline recorded for those decks | [team_results.md](../results/team_results.md); baseline: [train_ss.py](../imitation/training/train_ss.py), docstring |
 | Rule/search baseline, seat-balanced battery | 198/400 = 49.50% [44.63, 54.38]; first seat 116/200, second seat 82/200 (17 points) | [analysis_output.txt](../results/analysis_output.txt) |
 | Gumbel candidate vs same-deck baseline | 204/400 = 51.00% [46.11, 55.87]: no evidence either way | [analysis_output.txt](../results/analysis_output.txt) |
-| Value-head threshold | the constant predictor scores Brier 0.487022 on 17,392 rows from 185 games, so "below 0.5" admits zero skill | [analysis_output.txt](../results/analysis_output.txt) |
+| Zero-skill Brier reference | a class-frequency constant predictor scores Brier 0.487022 on the 17,392 validation rows (185 games; no draws), so a "Brier below 0.5" threshold would pass a model with no skill | [analysis_output.txt](../results/analysis_output.txt) |
+| Value head, Brier | 0.5771, worse than that zero-skill constant. See "The value head" below for how comparable the two numbers are | [main_v7.py](../imitation/serving/main_v7.py), module docstring |
 | Official-engine speedup, macOS arm64 | 1.497701x over the preceding implementation; 50 paired games matched all outcomes and 9,844 moves | [analysis_output.txt](../results/analysis_output.txt) |
 | Self-play instrumentation gate | 32/32 games, 5,513 decision records, 0 illegal actions: mechanics only, no learning claim | [analysis_output.txt](../results/analysis_output.txt) |
 | PPO vs its frozen parent (never submitted) | 0.8104 [0.756, 0.855], score 194.5/240; best of three arms against the same opponent, Bonferroni-adjusted (3 arms) [0.743, 0.863]. Control, the parent against itself, 0.4875 [0.419, 0.556], 97.5/200 | [ppo_RESULTS.md](../results/ppo_RESULTS.md); counts: `python3 figures/ppo_counts.py` |
@@ -61,6 +62,24 @@ The serving-forward defects whose cause *was* recorded are these:
 - a sweep of 32 packages found 3 correct, 9 importing with all card tags silently zero, and
   20 raising into a random-move fallback (same section).
 
+## The value head
+
+The team switched the value head off because it "measured Brier 0.5771 against a 0.6667
+uniform reference" ([main_v7.py](../imitation/serving/main_v7.py), docstring, as originally
+written). 0.6667 is the reference for three equally likely outcomes, but this data has no
+draws, and the right zero-skill reference is the class-frequency constant: 0.487022 on the
+185-game validation split of the same 926-game Sixth Sense corpus
+([results.csv](../results/results.csv), recomputed by `scripts/demo.sh`). Against that
+reference the value head did **worse than a predictor with no skill** (0.5771 > 0.487022).
+
+How comparable the two numbers are: the team's records place the 0.5771 on the held-out
+split of the 926-game corpus (run `ss-tf-ptr-001`, recorded 2026-08-07) and the 0.487022 on
+that corpus's 185-game, 17,392-row validation split; the team's later win-probability notes
+make the same comparison and call 0.6667 "the wrong" reference. Those records are in the
+team's private repository and are not included here, and they do not state that the two
+evaluations used identical rows. So the comparison is between two numbers on the same
+corpus and split definition, not a paired measurement.
+
 ## Design decisions, long form
 
 **Imitation for the submitted agent; RL only as a fine-tune of it.** The submitted agent is
@@ -80,16 +99,16 @@ submission sandbox, and both earlier neural submissions returned ERROR
 implementations of one forward pass that can drift apart: the 256.7 and 183.1 scores above,
 and an old serving forward that agreed with its own checkpoint on 0.7926 of decisions
 ([imitation/README.md](../imitation/README.md)). The compute-parity and serve-stamp gates
-pay for this choice; `demo/model_demo.py` shows the parity check catching the wrong mode on
-a SYNTHETIC model.
+pay for this choice; `demo/model_demo.py` shows, on a SYNTHETIC model, a badly built
+parity check reading a false PASS and the correct one catching the wrong mode.
 
 **Search lost; the shipped policy is one greedy forward pass.** ISMCTS won 111/400 and
 108/400 and was rejected; Gumbel won 204/400, no evidence either way. The case study puts
 the loss on that implementation (beliefs, transition fidelity, rollout evaluation), not on
 search in general (REPORT.md, section 5). Two further recorded costs: the value head that
-would steer a search measured Brier 0.5771 against a 0.6667 uniform reference, so it is
-unused (main_v7.py docstring); and identical search-enabled arms agreed on 132/200 outcomes
-against 200/200 without search (REPORT.md, section 4).
+would steer a search scored worse than a constant predictor (next section), so it is
+unused; and identical search-enabled arms agreed on 132/200 outcomes against 200/200
+without search (REPORT.md, section 4).
 
 **Why PPO was never submitted.** The records state that no submission slot was used, not why.
 What they record as still open at that point: the opponent pool was built but not wired in,

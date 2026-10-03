@@ -11,19 +11,21 @@ the other rows).
 
 ## Headline
 
-**Self-play PPO improved FIXED-312, and the improvement survives every gate that
-distinguishes real strength from beating its own parent.**
+**Self-play PPO beat its frozen parent, FIXED-312, and passed the five gates below;
+those gates do not settle robustness.** "Still open" at the end lists what they leave
+untested: training was a best response to one frozen opponent, no cross-seed check was
+run, and the offline harness fails its own absolute control. Nothing was submitted.
 
 ```
                                         vs frozen champion        pass rate
-champion (baseline, main_v6 rule)            ~0.500                 0.0000
+champion (main_v6 rule), by construction     0.5 (not measured)     0.0000
 PPO iter-030, no cardinality fix              0.7975 [.736,.847]    0.0000
 iter-057 + sampling-calibrated STOP           0.7675 [.704,.821]    0.1565
 iter-057 + GREEDY-calibrated STOP             0.8104 [.756,.855]    0.0509   <- best
 ```
 
 Control that makes those readable: **champion vs itself 0.4875 [0.419, 0.556]** —
-straddles 0.5, so no seat bias, no harness artefact.
+consistent with no seat bias in this harness (one 200-game self-match).
 
 ---
 
@@ -81,7 +83,7 @@ imperfect and only the paired delta is quoted as evidence.
 **0 of 2,035** pass-legal decisions. The large gain is better option *ranking*.
 The cardinality fix adds roughly 1–3 points on top.
 
-**The STOP head could not learn from reward, and here is the proof.** Over 30
+**The STOP head could not learn from reward.** Over 30
 iterations `stop_bias` moved **+0.005**; closed-form calibration showed the
 required move was **+15.65**. It was starved, not slow: `P(STOP) ≈ 0.004` means
 STOP is almost never sampled, so almost no credit reaches it and the gradient
@@ -115,7 +117,7 @@ Each was found by refusing to read past a failing control.
 1. **The 2026-08-08 run was broken before its first gradient step** —
    `approx_kl 7.486`, `ratio_max 125.2` at epoch 0 minibatch 0, where the ratio
    must be exactly 1. A rollout/trainer seam, not a tuning problem. Fixed
-   structurally: one collate, one scorer, both sides. Ours reads **4e-06**.
+   structurally: one collate, one scorer, both sides. After the fix it reads **4e-06**.
 2. **Temperature seam.** `sample_selection` scales logits by temperature; the
    replay did not. Arm B died at `8.4e-01`. Arm A survived only because
    temperature 1.0 makes it a no-op.
@@ -132,7 +134,7 @@ Each was found by refusing to read past a failing control.
 ## Still open
 
 - **The opponent pool is built and tested but not wired.** Training is still a
-  best response to one frozen opponent. Gate 3 says that has not hurt us yet;
+  best response to one frozen opponent. Gate 3 shows no damage from that so far;
   wiring it is the main remaining robustness work.
 - **Joint-Policy Correlation** across independent seeds — the canonical
   overfitting measurement — not run.

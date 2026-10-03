@@ -87,9 +87,9 @@ closed-form calibration said +15.65 was needed, which is why `--freeze-stop` exi
 
 ## What this design does not claim
 
-- Not that the ladder would move. The same checkpoint scored 851.5, 305.9 and 133.1 in three
-  serving packages (the cause of the drop was not recorded), so the serving package
-  dominated the ladder signal; the experiment holds it constant and varies only the weights.
+- Not that the ladder would move. The same weights scored 851.5, 305.9 and 133.1 in three
+  serving packages, a 718-point spread of unrecorded cause; the experiment holds the
+  serving path constant and varies only the weights.
 - Not that the cardinality head helps: it claims the champion cannot express cardinality, that
   the corpus cannot teach it, and that outcomes can. The head-to-head decides whether that
   is worth anything.

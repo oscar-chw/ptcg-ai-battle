@@ -34,7 +34,7 @@ neither — which is how it reached `approx_kl 7.486` at epoch 0, minibatch 0,
 
 | | value | why |
 |---|---|---|
-| ratio at epoch 0, minibatch 0 | **exactly 1.0** | canonical assertion. If it is not, it is a seam bug and no amount of tuning will help. Ours reads `4e-06`; the old run read `125.2`. |
+| ratio at epoch 0, minibatch 0 | **exactly 1.0** | canonical assertion. If it is not, it is a seam bug and no amount of tuning will help. The rebuilt pipeline reads `4e-06`; the old run read `125.2`. |
 | `target_kl` | 0.01–0.02, abort at **1.5×** | clipping does **not** bound KL. Spinning Up, verbatim: the policy *"can still go farther than the clip_ratio says, but it doesn't help on the objective anymore"* |
 | abort granularity | **per minibatch** (SB3) | CleanRL breaks only per *epoch*. The old run reached minibatch 325 inside epoch 0, so an epoch check would never have fired. |
 | `β` | **0.01–0.02**, adaptive | Ouyang's sweep: both 0 and 2 perform poorly; the optimum is "around 0.01 and 0.02" |

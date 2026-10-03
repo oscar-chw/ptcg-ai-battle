@@ -11,10 +11,19 @@ random boards. What it shows is the mechanism, not playing strength:
 1. the hand-written NumPy forward that ships to the sandbox scores the legal options of
    one board, next to torch's scores for the same weights;
 2. the same weights served with the wrong serving mode (no padding masks, no relation
-   bias) choose differently, which is the defect class behind the repository's lead;
-3. the compute-parity check reads PASS for the trained mode and catches the wrong one.
+   bias) choose differently: the defect behind two recorded ladder scores of 256.7 and
+   183.1 against an 800.5 champion;
+3. a parity check whose torch reference is built the same wrong way (no masks, no
+   relations, as the team's old export-parity check did) reads PASS on that wrong
+   serving mode: the false green that let those packages ship;
+4. a parity check whose torch reference is built the way training ran reads PASS for the
+   trained mode and catches the wrong one.
 
-Exit 0 only if the trained mode matches torch and the wrong mode is detected.
+The comparison mirrors imitation/gates/gate_compute_parity.py (argmax over the real
+options on identical inputs) on SYNTHETIC rows; the gate itself needs a run manifest
+and a checkpoint, which a fresh clone does not have.
+
+Exit 0 only if all three parity rows come out as described.
 """
 import sys
 from pathlib import Path
@@ -65,20 +74,31 @@ def main():
         print(f"  {i:>6}  {p_torch[i]:>15.4f}  {p_np[i]:>19.4f}  {p_wrong[i]:>17.4f}")
     print(f"  chosen  {int(p_torch.argmax()):>15}  {int(p_np.argmax()):>19}  {int(p_wrong.argmax()):>17}")
 
+    # The torch reference built the way the team's old check built it: no masks, no
+    # relations, whatever the run actually trained with.
+    syn.set_training_semantics(mask_state=False, mask_options=False, relations=False)
+    ref_bad = syn.torch_logits(model, rows)
+    syn.set_training_semantics(mask_state=True, mask_options=True, relations=True)
+
     print(f"\nCompute parity over {N_BOARDS} SYNTHETIC boards, same weights:")
     ok = True
-    for name, mode in (("trained mode", TRAINED), ("wrong mode  ", WRONG)):
+    for name, reference, mode, want in (
+            ("badly built check, wrong serving mode", ref_bad, WRONG, True),
+            ("correct check, wrong serving mode", ref, WRONG, False),
+            ("correct check, trained serving mode", ref, TRAINED, True)):
         got = [numpy_logits(weights, r, mode) for r in rows]
-        gap = max(float(np.abs(a - b).max()) for a, b in zip(ref, got))
-        flips = sum(int(a.argmax() != b.argmax()) for a, b in zip(ref, got))
+        gap = max(float(np.abs(a - b).max()) for a, b in zip(reference, got))
+        flips = sum(int(a.argmax() != b.argmax()) for a, b in zip(reference, got))
         passed = gap < 1e-4 and flips == 0
-        print(f"  {name}  max logit gap {gap:.2e}, chosen action differs on "
-              f"{flips}/{N_BOARDS} boards -> {'PASS' if passed else 'FAIL (detected)'}")
-        ok &= passed if mode is TRAINED else not passed
-    print("\nThe check passes the serving mode the weights were trained with and rejects the"
-          "\nother. The team's records attribute two ladder scores of 256.7 and 183.1, against"
-          "\na champion's 800.5, to this defect class: a parity check that collated torch the"
-          "\nsame wrong way read green (imitation/gates/gate_compute_parity.py, docstring).")
+        verdict = "PASS" if passed else "FAIL"
+        note = {(True, True): "(false green)" if mode is WRONG else "",
+                (False, False): "(defect caught)"}.get((passed, want), "(UNEXPECTED)")
+        print(f"  {name:<38} gap {gap:.2e}, {flips:>2}/{N_BOARDS} choices differ -> "
+              f"{verdict} {note}".rstrip())
+        ok &= passed == want
+    print("\nA check built the same wrong way as the serving code agrees with it. The team's"
+          "\nrecords put two ladder scores of 256.7 and 183.1, against a champion's 800.5,"
+          "\nbehind exactly that green light (imitation/gates/gate_compute_parity.py).")
     return 0 if ok else 1
 
 
