@@ -1,15 +1,32 @@
 # ptcg-ai-battle
 
-**Rank 2,043 of 6,807 on the final Simulation leaderboard of the Kaggle Pokemon TCG AI
-Battle competition, final score 709.1, with the submitted agent `BEST1_fixed`**
-([results/final_standing.json](results/final_standing.json)). It was a team effort: the
-submitted agent and the imitation pipeline behind it are the team's work, and this
-repository is a consolidation of that work and of two follow-up experiments that were never
-submitted. No medal, and no claim that reinforcement learning improved the submitted agent.
+A case study in verifying that a game-AI result is real: imitation learning, self-play PPO
+and search baselines for the Kaggle Pokemon TCG AI Battle.
 
-Implemented with AI coding agents under Oscar's design and review. The consolidation, the
-cleanup, the tests, the demo and the write-ups in this repository were produced that way;
-the competition work itself is credited to the team.
+**One checkpoint scored 851.5, 305.9 and 133.1 on the competition ladder depending only on
+its serving path**: same weights, three serving paths
+([ppo/docs/BASELINE.md](ppo/docs/BASELINE.md), section 2, "Why this does not change the PPO
+plan"). Ladder noise does not explain a 718-point spread: the identical package scored 800.5
+and 851.5 two days apart (same file, section 1). That spread is why a package here ships only
+after four gates check the built package, not the training run.
+
+The team's submitted agent, `BEST1_fixed`, finished **rank 2,043 of 6,807 on the final
+Simulation leaderboard, score 709.1**, no medal
+([results/final_standing.json](results/final_standing.json)). The team's write-up was
+submitted to the Kaggle strategy track
+([write-up](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle-challenge-strategy/writeups/from-imitation-to-reliable-play-a-ptcg-agent-stud)).
+
+```bash
+bash scripts/demo.sh    # standard-library python3, no engine: recomputes the results table, prints the headline
+bash scripts/check.sh   # every suite that runs without the engine
+PTCG_PYTHON=/path/to/python-with-numpy-torch-pytest bash scripts/check.sh   # adds the numeric suites
+```
+
+![Policy architecture and evaluation boundaries](report/architecture.svg)
+
+Implemented with AI coding agents under Oscar's design and review: the consolidation,
+tests, demo and write-ups here; the competition work itself is the team's. The licence is
+split by authorship, and no engine code or data is included ([Limits](#limits)).
 
 ## The problem
 
@@ -24,10 +41,9 @@ ladder of simulated games.
 Two things made this harder than it looks. A model can pass every offline gate and still
 play badly, because what is deployed can silently differ from what was trained: two packages
 that passed every gate scored 260.9 and 156.9 against an 800.5 champion because the deployed
-agent was playing at random, and one checkpoint scored 851.5, 305.9 and 133.1 depending only
-on its serving path ([imitation/README.md](imitation/README.md),
-[ppo/README.md](ppo/README.md)). So the project's real subject became *how to know a result
-is true*.
+agent was playing at random ([imitation/README.md](imitation/README.md), "Packaging"), and
+the serving-path spread above came from the same weights. So the project's real subject
+became *how to know a result is true*.
 
 ## Approach (methods and algorithms)
 
@@ -57,6 +73,14 @@ transformers, FiLM, DAgger, ISMCTS, expert iteration) and in
 
 ## Results (real numbers with their source; synthetic clearly labelled)
 
+![Win rates with intervals: search batteries and PPO against its frozen parent](figures/results.png)
+
+Rendered by [figures/plot_results.py](figures/plot_results.py) from
+[results/results.csv](results/results.csv) (left panel's numbers recomputed by
+`report/analyze_results.py`) and [figures/ppo_head_to_head.csv](figures/ppo_head_to_head.csv)
+(quotes copied verbatim from [results/ppo_RESULTS.md](results/ppo_RESULTS.md));
+`figures/tests` checks every plotted number against those sources.
+
 No result below is synthetic. The fixtures inside the test suites are, and are labelled
 SYNTHETIC where they are defined. Intervals are nominal Wilson 95% intervals for the recorded
 samples, not uncertainty over all opponents.
@@ -74,7 +98,7 @@ samples, not uncertainty over all opponents.
 | Self-play instrumentation gate | 32/32 games, 5,513 decision records, 0 illegal actions: mechanics only, no learning claim | [analysis_output.txt](results/analysis_output.txt) |
 | **PPO vs its frozen parent (never submitted)** | **0.8104 [0.756, 0.855]**; control, the parent against itself, 0.4875 [0.419, 0.556]. The number of games is not recorded in the sources | [ppo_RESULTS.md](results/ppo_RESULTS.md) |
 | GPU engine slice, M2 Max, Metal | 110.14M env-steps/s and 572.2k games/s at batch 262,144; 213 Rust tests passed (a partial game, not the full rules) | [engine/README.md](engine/README.md) |
-| This repository's tests | 115 ppo (pytest), 31 imitation numeric, 19 imitation stdlib, 12 demo, 5 report (unittest) | `bash scripts/check.sh` |
+| This repository's tests | 115 ppo (pytest), 31 imitation numeric, 19 imitation stdlib, 12 demo, 5 report, 4 figures (unittest) | `bash scripts/check.sh` |
 
 **Negative results**, in full in [results/negative_results.md](results/negative_results.md):
 
@@ -88,20 +112,25 @@ samples, not uncertainty over all opponents.
 ## How to run (under 5 minutes)
 
 ```bash
-bash scripts/check.sh        # no engine needed; about 1 s without torch, about 18 s with it
+bash scripts/demo.sh     # no engine, standard-library python3; under a second when observed
+bash scripts/check.sh    # no engine; observed about 1 s without torch, about 19 s with it
 ```
 
-It runs the standard-library suites, recomputes the results table with
-`report/analyze_results.py` and checks it against [results/analysis_output.txt](results/analysis_output.txt),
-and runs the demo with no engine, which must exit with a message. The suites that need
-numpy, torch and pytest (`imitation/tests_torch`, `ppo/tests`) are **skipped, and printed as
-SKIPPED, not passed**, unless `PTCG_PYTHON` points at an interpreter that has them.
+`scripts/demo.sh` recomputes the results table from [results/results.csv](results/results.csv)
+with `report/analyze_results.py`, fails unless it equals the committed
+[results/analysis_output.txt](results/analysis_output.txt), prints the headline with its
+sources, and explains how to play a live match. `scripts/check.sh` runs the standard-library
+suites (report, imitation, figures, demo), then `scripts/demo.sh`, then the demo match with no
+engine, which must exit 2 with a message. The suites that need numpy, torch and pytest
+(`imitation/tests_torch`, `ppo/tests`) are **skipped, and printed as SKIPPED, not passed**,
+unless `PTCG_PYTHON` points at an interpreter that has them. This repository installs
+nothing. [.github/workflows/ci.yml](.github/workflows/ci.yml) runs the standard-library
+suites on Python 3.9 and 3.12, and the numeric suites in a job that installs numpy and CPU
+torch on the runner, where a skipped suite fails the job.
 
-Requirement: numeric suites need numpy and torch; `scripts/check.sh` runs them when
-`PTCG_PYTHON` points at an environment that has them, otherwise it reports them as skipped.
-(The `ppo` suite also needs pytest. This repository installs nothing.)
+The timings above are observations from single local runs, not benchmarks.
 
-To play two small agents on the real engine (needs Python 3.10+; about 3 s for 1,000 games):
+To play two small agents on the real engine (needs Python 3.10+):
 
 ```bash
 PTCG_ENGINE_DIR=/path/to/sample_submission python3 demo/run_match.py --games 1000
@@ -109,15 +138,20 @@ PTCG_ENGINE_DIR=/path/to/sample_submission python3 demo/run_match.py --games 100
 
 The engine is not in this repository and cannot be: it is licensed for competition use only.
 [demo/README.md](demo/README.md) says how to download it from Kaggle. With the variable
-unset the demo prints that and exits with status 2.
+unset the demo prints that and exits with status 2. One observed local run took 2.5 s for
+1,000 games; that is an observation, not a benchmark.
+
+To re-render the results figure (needs matplotlib): `python figures/plot_results.py`.
 
 ## Architecture
 
 ```
 README.md            this file
 scripts/check.sh     everything checkable without the engine
+scripts/demo.sh      the fresh-clone demo: results table, headline, engine instructions
 results/             every number in this README, as a file: final standing, results.csv,
                      analysis_output.txt, the PPO results, the negative results
+figures/             the results figure, its script, and a test tying it to results/
 imitation/           set-transformer model, featurizer, trainer, NumPy serving, 4 packaging gates
   training/ serving/ gates/ tests/ tests_torch/
 ppo/                 ptcg_ppo (STOP head, PPO objective, advantage, opponent pool) + 115 tests + design docs
@@ -125,15 +159,54 @@ report/              the case study and analyze_results.py (standard library onl
 engine/              GPU engine slice: numbers and design only, no code
 demo/                two agents, one local match on the engine you supply
 docs/                the architecture paper
+.github/workflows/   CI: standard-library suites, and the numeric suites with numpy and torch
 ```
 
-![Policy architecture and evaluation boundaries](report/architecture.svg)
-
-Data flows left to right: replays become tokens (`featurize`), tokens train the set
+In the architecture figure at the top of this README, data flows left to right: replays become tokens (`featurize`), tokens train the set
 transformer (`train_ss`), the checkpoint is exported to NumPy with its serving flags stamped
 from the run's own manifest (`export_ss_numpy`), a package is built by one script
 (`package_arms.sh`) and is gated four ways before it is tarred. `ppo/` starts from a
 checkpoint and replaces the cardinality constant with a learned STOP decision.
+
+Longer write-ups: [docs/architecture.pdf](docs/architecture.pdf) (the model),
+[report/REPORT.md](report/REPORT.md) (the case study), [ppo/docs/DESIGN.md](ppo/docs/DESIGN.md)
+(the PPO method) and [imitation/README.md](imitation/README.md) (serving and the gates).
+
+### Design decisions and trade-offs
+
+- **Imitation for the submitted agent; RL only as a fine-tune of it.** The submitted agent is
+  behaviour cloning on winning games ([report/REPORT.md](report/REPORT.md), sections 1 and 3).
+  Its quality is bounded by its teachers: the Spidops model faithfully copied a player who
+  won 6.2% of 48 episodes and failed its baseline, and a five-demonstrator corpus gave one board several conflicting labels
+  ([results/team_results.md](results/team_results.md)). The team's own self-play loop passed
+  its instrumentation gate (32/32 games, 0 illegal actions) but had not demonstrated a
+  learning improvement (REPORT.md, section 6), so RL entered only as PPO on top of an
+  imitation champion ([ppo/](ppo/README.md)).
+- **Hand-written NumPy at inference, torch only to train.** Torch is not guaranteed in the
+  submission sandbox, and both earlier neural submissions returned ERROR, so the framework was
+  removed from the failure surface ([imitation/serving/main_v7.py](imitation/serving/main_v7.py),
+  module docstring). The price is two implementations of one forward pass that can drift
+  apart: an old serving forward agreed with its own checkpoint on 0.7926 of decisions
+  ([imitation/README.md](imitation/README.md)), and the serving path alone moved one
+  checkpoint from 851.5 to 133.1. The compute-parity and serve-stamp gates are what pays for
+  this choice.
+- **Search baselines lost; the shipped policy is one greedy forward pass, no search.** ISMCTS won
+  111/400 and 108/400 and was rejected; a Gumbel candidate won 204/400, no evidence either way
+  ([results/analysis_output.txt](results/analysis_output.txt)). The case study puts the loss
+  on that implementation (beliefs, transition fidelity, rollout evaluation), not on search in
+  general (REPORT.md, section 5). Two further costs are recorded: the value head that would
+  steer a search measured Brier 0.5771 against a 0.6667 uniform reference, so it is unused
+  (main_v7.py docstring), and search made evaluation noisier, with identical search-enabled
+  arms agreeing on 132/200 outcomes against 200/200 without search (REPORT.md, section 4).
+- **Why PPO was never submitted.** The records state that no submission slot was used; they
+  do not record a decision memo. What they record as still open at that point: the
+  opponent pool was built but not wired in, so training was a best response to one frozen
+  opponent; the cross-seed overfitting check was not run; the offline harness did not pass
+  its own absolute control ([results/ppo_RESULTS.md](results/ppo_RESULTS.md), "Still open").
+  And because the serving path dominated the ladder signal, a ladder score would not have
+  isolated the weights; the design treats whether a better policy survives packaging as a
+  separate experiment ([ppo/docs/DESIGN.md](ppo/docs/DESIGN.md), section 6). So 0.8104 is a
+  head-to-head against the frozen parent, never a ladder result.
 
 ## Limits
 
@@ -154,13 +227,15 @@ checkpoint and replaces the cardinality constant with a learned STOP decision.
 - **Ladder scores are not comparable across time.** The same package scored 800.5 and then
   851.5 two days apart ([ppo/docs/BASELINE.md](ppo/docs/BASELINE.md)), and 851.5 and 790.8 are
   mid-competition scores of other submissions; only the final standing, 709.1, is the result.
-- **The GPU numbers are a partial game on one laptop GPU**, with no CUDA measurement.
+- **The GPU numbers are a partial game on one laptop GPU**, with no CUDA measurement, and are
+  not reproducible from this repository: the port and its benchmark are not published.
 - **The engine speedup applies to one macOS build and workload.** It is not a strength gain.
 - **The case study discusses individual cards** from a participant's point of view; Pokemon
   and associated names are third-party trademarks, and no official artwork, card text or
   engine files are included.
 - **Licence.** The work is split by authorship. The root licence is MIT ([LICENSE](LICENSE)) and
-  covers Oscar's own parts only: `ppo/`, `demo/`, `scripts/`, `engine/README.md` and this README.
+  covers Oscar's own parts only: `ppo/`, `demo/`, `scripts/`, `figures/`, `.github/`,
+  `engine/README.md` and this README.
   `imitation/` and `report/` are the team's work and carry their own `LICENSE` files
   ([imitation/LICENSE](imitation/LICENSE), [report/LICENSE](report/LICENSE)): "Copyright the
   team. All rights reserved until the team agrees to a licence." `results/` and `docs/` record

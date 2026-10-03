@@ -8,8 +8,11 @@
 #   report    analyze_results.py reproduces results/analysis_output.txt exactly, and
 #             rejects edited inputs                               report/tests
 #   imitation serve-flag logic, strict_get, deck_tracker          imitation/tests
-#   demo      agents and match loop against a test double of the engine; and the demo
-#             itself with PTCG_ENGINE_DIR unset, which must exit 2 with a clear message
+#   figures   every number drawn in figures/results.png traces to a committed source
+#                                                                 figures/tests
+#   demo      agents and match loop against a test double of the engine; the demo match
+#             with PTCG_ENGINE_DIR unset, which must exit 2 with a clear message; and
+#             scripts/demo.sh (table, headline, engine instructions) with no engine
 #
 # WHAT NEEDS numpy + torch (+ pytest for ppo) -- SKIPPED, NOT PASSED, WITHOUT THEM:
 #   imitation-numeric   model, NumPy-vs-torch parity, export, the four gates, packaging
@@ -49,7 +52,9 @@ run "report: analyze_results reproduces the committed table" \
     bash -c "diff <($PY report/analyze_results.py) results/analysis_output.txt"
 run "report: tests" "$PY" -m unittest discover -s report/tests
 run "imitation: tests (serve flags, strict_get, deck_tracker)" "$PY" -m unittest discover -s imitation/tests
+run "figures: tests (plotted numbers trace to their sources)" "$PY" -m unittest discover -s figures/tests
 run "demo: tests (agents, match loop, no-engine message)" "$PY" -m unittest discover -s demo/tests
+run "demo: scripts/demo.sh with no engine" env -u PTCG_ENGINE_DIR bash scripts/demo.sh
 
 # The demo itself. Without an engine it must refuse clearly (exit 2, naming the variable).
 if [ -z "${PTCG_ENGINE_DIR:-}" ]; then

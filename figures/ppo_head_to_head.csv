@@ -1,0 +1,5 @@
+label,role,quote
+"Champion vs itself (control)",control,"0.4875 [0.419, 0.556]"
+"PPO iter-030, no cardinality fix",candidate,"0.7975 [.736,.847]"
+"PPO iter-057, sampling-calibrated STOP",candidate,"0.7675 [.704,.821]"
+"PPO iter-057, greedy-calibrated STOP",candidate,"0.8104 [.756,.855]"

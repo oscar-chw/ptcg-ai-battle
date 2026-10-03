@@ -38,7 +38,9 @@ status 2; if the folder has no `cg/` it says so and exits 2 as well.
 
 ## Example output
 
-One run of the command above on an Apple M-series Mac (2.5 s for 1,000 games):
+One run of the command above on an Apple M-series Mac. The 2.5 s is an observation from that
+single run, not a benchmark: there is no repeated timing, seed or hardware record behind it,
+and nothing in this repository depends on it.
 
 ```
 1000 games, seats alternated, mirror deck

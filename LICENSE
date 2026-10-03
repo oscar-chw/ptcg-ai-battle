@@ -1,7 +1,8 @@
 MIT License
 
-This licence covers only ppo/, demo/, scripts/, engine/README.md and README.md. imitation/ and
-report/ carry their own LICENSE files; see the Limits section of README.md.
+This licence covers only ppo/, demo/, scripts/, figures/, .github/, engine/README.md and
+README.md. imitation/ and report/ carry their own LICENSE files; see the Limits section of
+README.md.
 
 Copyright (c) 2026 Oscar Choi
 

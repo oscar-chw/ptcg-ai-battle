@@ -1,0 +1,43 @@
+# Runs on GitHub's runners. Nothing here needs the competition engine.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  stdlib:
+    # scripts/check.sh with the standard library only: the report, imitation, figures and
+    # demo suites, and scripts/demo.sh. The numeric suites print SKIPPED here by design.
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: bash scripts/check.sh
+      - run: bash scripts/demo.sh
+
+  numeric:
+    # imitation/tests_torch and ppo/tests, with numpy and CPU torch installed from PyPI on the
+    # runner. The versions are the ones these suites last passed with locally. A skipped suite
+    # fails this job: here it would mean the install did not work, not that a dependency is
+    # optional.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy==2.4.6 pytest==9.1.1
+          python -m pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+      - name: check.sh with the numeric suites, none skipped
+        run: |
+          out=$(PTCG_PYTHON=python bash scripts/check.sh)
+          echo "$out"
+          if grep -q '^SKIPPED' <<<"$out"; then echo "a numeric suite was skipped" >&2; exit 1; fi
