@@ -95,8 +95,11 @@ It runs the standard-library suites, recomputes the results table with
 `report/analyze_results.py` and checks it against [results/analysis_output.txt](results/analysis_output.txt),
 and runs the demo with no engine, which must exit with a message. The suites that need
 numpy, torch and pytest (`imitation/tests_torch`, `ppo/tests`) are **skipped, and printed as
-SKIPPED, not passed**, unless `PTCG_PYTHON` points at an interpreter that has them
-(TODO-DEPENDENCY: none is installed by this repository).
+SKIPPED, not passed**, unless `PTCG_PYTHON` points at an interpreter that has them.
+
+Requirement: numeric suites need numpy and torch; `scripts/check.sh` runs them when
+`PTCG_PYTHON` points at an environment that has them, otherwise it reports them as skipped.
+(The `ppo` suite also needs pytest. This repository installs nothing.)
 
 To play two small agents on the real engine (needs Python 3.10+; about 3 s for 1,000 games):
 
@@ -156,11 +159,49 @@ checkpoint and replaces the cardinality constant with a learned STOP decision.
 - **The case study discusses individual cards** from a participant's point of view; Pokemon
   and associated names are third-party trademarks, and no official artwork, card text or
   engine files are included.
-- **Licence.** The code and text here are MIT ([LICENSE](LICENSE)). The official engine is
+- **Licence.** The work is split by authorship. The root licence is MIT ([LICENSE](LICENSE)) and
+  covers Oscar's own parts only: `ppo/`, `demo/`, `scripts/`, `engine/README.md` and this README.
+  `imitation/` and `report/` are the team's work and carry their own `LICENSE` files
+  ([imitation/LICENSE](imitation/LICENSE), [report/LICENSE](report/LICENSE)): "Copyright the
+  team. All rights reserved until the team agrees to a licence." `results/` and `docs/` record
+  and quote the team's work and are not offered under the MIT licence either. The official engine is
   `LicenseRef-PTCG-ABC-Competition-Use-Only` and is not included; `featurize.py` and the
   packager read it from a directory you supply through `PTCG_ENGINE_DIR`.
 
 ## What I learned
 
-TODO-OSCAR: the sources record no conclusions of Oscar's own for this project, so this
-section is left for him to write.
+Four candidate lessons, each drawn from a conclusion this project's records already state, with
+its source. They are drafts for Oscar to confirm or strike, not yet his own words.
+
+1. **A threshold can be met by a model with no skill.** The constant predictor, which only knows
+   the class frequencies, scores Brier 0.487022 on 17,392 rows from 185 games, so a gate of
+   "Brier below 0.5" admits zero skill. A value-loss gate needs that baseline beside it
+   (source: [report/REPORT.md](report/REPORT.md) section 4;
+   [results/analysis_output.txt](results/analysis_output.txt)).
+
+   DRAFT — Oscar to confirm
+
+2. **A sophisticated method can lose to a plain baseline, and the loss belongs to the
+   implementation, not the idea.** ISMCTS won 111/400 (27.75%) and 108/400 (27.00%),
+   was rejected, and the record says it failed "in our evaluated implementation, not as a general
+   research direction" because search quality depends on beliefs, transition fidelity and rollout
+   evaluation (source: [results/negative_results.md](results/negative_results.md) section 3;
+   [report/REPORT.md](report/REPORT.md) section 5).
+
+   DRAFT — Oscar to confirm
+
+3. **A go/no-go gate only means something if a miss stops the line.** The older distillation
+   line was gated at top-1 agreement 0.55 with its teacher, scored 0.376667, never passed
+   (best 0.496667) and was not carried forward (source:
+   [results/negative_results.md](results/negative_results.md) section 2).
+
+   DRAFT — Oscar to confirm
+
+4. **Passing every gate does not show the deployed agent is the trained one.** A second build
+   path shipped a fixed defect again, scoring 260.9 and 156.9 against a champion's 800.5, and one
+   checkpoint scored 851.5, 305.9 and 133.1 depending only on its serving path. The packaging
+   became four gates run on the built package, not an opinion about it (source:
+   [imitation/README.md](imitation/README.md), "Packaging"; [ppo/README.md](ppo/README.md);
+   [ppo/docs/BASELINE.md](ppo/docs/BASELINE.md)).
+
+   DRAFT — Oscar to confirm

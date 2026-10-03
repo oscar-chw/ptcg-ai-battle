@@ -16,10 +16,10 @@
 #                       imitation/tests_torch  (needs numpy, torch)
 #   ppo                 the 115 ptcg_ppo tests                    ppo/tests
 #                       (needs numpy, torch, pytest)
-#   TODO-DEPENDENCY: this machine's system python3 has none of them, and nothing is
-#   installed by this script. Point PTCG_PYTHON at an interpreter that has them
-#   (or create ./.venv with them); a skipped suite is printed as SKIPPED below and never
-#   counted as a pass.
+#   Requirement: numeric suites need numpy and torch; this script runs them when
+#   PTCG_PYTHON points at an environment that has them (or ./.venv does), otherwise it
+#   reports them as skipped. Nothing is installed by this script; a skipped suite is
+#   printed as SKIPPED below and never counted as a pass.
 #
 # THE DEMO WITH THE REAL ENGINE runs only if PTCG_ENGINE_DIR is set (and python is 3.10+);
 # see demo/README.md. Otherwise only the no-engine behaviour above is checked.
