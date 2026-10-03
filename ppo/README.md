@@ -42,9 +42,14 @@ token in the selection MDP, so the number of picks is a decision like any other.
 ## Results
 
 Win rate against the frozen champion, from [../results/ppo_RESULTS.md](../results/ppo_RESULTS.md):
-**0.8104 [0.756, 0.855]** for iteration 57 with a greedy-calibrated STOP head. The number of
-games behind that interval is **not recorded** in the sources, so it is not stated here.
-The control that makes it readable is the champion against itself: 0.4875 [0.419, 0.556].
+**0.8104 [0.756, 0.855]** for iteration 57 with a greedy-calibrated STOP head. The game
+counts were not written down; the intervals admit only 194.5/240 for this arm and 97.5/200
+for the control, the champion against itself, 0.4875 [0.419, 0.556]
+(`python3 figures/ppo_counts.py`). Draws and unfinished games score 0.5 in this evaluator.
+0.8104 is the best of three PPO arms scored against the same opponent; adjusted for that
+choice (Bonferroni over 3) its interval is [0.743, 0.863]. Against an opponent never
+trained against (the heuristic agent), PPO scored 0.7167 [0.663, 0.765] and the champion
+0.5333 [0.409, 0.654].
 The same file lists what is still open: the opponent pool is built and tested but not wired
 in, joint-policy correlation across seeds was not run, and the offline replay harness does
 not pass its own absolute control, so only its paired delta is quoted.
@@ -82,9 +87,9 @@ closed-form calibration said +15.65 was needed, which is why `--freeze-stop` exi
 
 ## What this design does not claim
 
-- Not that the ladder would move. The same checkpoint scored 851.5, 305.9 and 133.1 on three
-  serving paths, so serving-path choice dominated the ladder signal; the experiment holds it
-  constant and varies only the weights.
+- Not that the ladder would move. The same checkpoint scored 851.5, 305.9 and 133.1 in three
+  serving packages (the cause of the drop was not recorded), so the serving package
+  dominated the ladder signal; the experiment holds it constant and varies only the weights.
 - Not that the cardinality head helps: it claims the champion cannot express cardinality, that
   the corpus cannot teach it, and that outcomes can. The head-to-head decides whether that
   is worth anything.

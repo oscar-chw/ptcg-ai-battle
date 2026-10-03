@@ -5,7 +5,7 @@
 Read this first. The distinction below is the difference between evidence and
 repetition, and this project has been burned by the second.
 
-**MEASURED BY ME, this session, command in hand — trust these:**
+**MEASURED directly on 2026-08-16, with the command or file named — the primary evidence:**
 
 | claim | how |
 |---|---|
@@ -20,19 +20,19 @@ repetition, and this project has been burned by the second.
 | **86% of those are the `(0,1)` cell** — act or don't, not "how many" | same run |
 | 107 tests, 4 gates green on the real checkpoint | ran them |
 
-**QUOTED from the repo's own recorded measurements — NOT re-derived by me:**
+**QUOTED from the training repository's own recorded measurements — not re-derived here:**
 
 - `54.93% / 17.43% / 56.33%` exact-k for maxCount / minCount / the v8 table
 - `145,834 decisions = 13.99%` with `minCount == 0`, and pilots passing `4.20%`
   of offers *(note: `CODING_PLAN.md` reports `20.23%` for what sounds like the
-  same statistic on a different corpus — the two have not been reconciled, and I
-  have verified neither)*
+  same statistic on a different corpus — the two have not been reconciled, and
+  neither has been verified here)*
 - the `(0,2)…(1,5)` pilot-behaviour table
 - "ALL 840 pass rows lack an END option"
 
 These come with the command that produced them cited in the source, which is
 better than most claims in this tree, but they are still someone else's
-measurement. My engine measurement above is the only independent check, and it
+measurement. The engine measurement above is the only independent check, and it
 agrees on the order of magnitude (15.23% vs 13.99%) while disagreeing on the
 emphasis.
 
@@ -41,7 +41,7 @@ emphasis.
 - that the `collate` / `collate_fast` split is *the* cause of the epoch-0 KL
   blowup. Strongly supported (the rollout backend calls `collate`, the trainer
   calls `collate_fast`, and they differ on exactly the mask and truncation flags)
-  but **I have not run the experiment that isolates it.**
+  but **the experiment that isolates it has not been run.**
 - the 35/30/25/10 opponent mix.
 - `f_var` over `f_hard`.
 
@@ -58,7 +58,7 @@ than a patch.
 
 ---
 
-Every number below was read off the tree or the API this session, not recalled.
+Every number below was read off the tree or the Kaggle API on 2026-08-16, not recalled.
 Where something is unmeasured, it says so.
 
 ---
@@ -102,7 +102,7 @@ mode cannot be read back from the package and must be asserted, not defaulted.
 
 ## 2. The two defects in the live agent — confirmed, both present
 
-The champion package ships **`main_v6.py`**. Both defects reported by the user are in it.
+The champion package ships **`main_v6.py`**. Both defects observed in play are in it.
 
 ### 2a. It cannot pass — "plays every single possible thing"
 
@@ -145,7 +145,14 @@ CHAMP-v7    same weights, v7 serving    305.9
 CHAMP-v7max same weights, v7max serving 133.1
 ```
 
-Same checkpoint, three serving paths, a 718-point spread. **Serving-path choice
+Provenance of the two lower scores: they were copied from the project's ladder notes
+and are in neither class at the top of this document. The submission dates and what
+exactly the v7 and v7max packages changed (flags, featurizer, count rule) were not
+recorded, and `main_v7.py` with every serving flag off computes the same forward as
+v6, so the cause of the drop is **not recorded**. Read them as "same weights, different
+serving package", not as a measured serving-path effect.
+
+Same checkpoint, three serving packages, a 718-point spread. **Serving-path choice
 currently dominates the ladder signal.** Therefore the PPO experiment must hold the
 serving path *constant* and vary only the weights, or its result will be unreadable.
 The serving fix is a separate, later, one-variable experiment.
@@ -214,7 +221,7 @@ The rollout plumbing is reusable. **The trainer is what gets rewritten.**
 
 ## 4. Compute available
 
-Measured at session start, 2026-08-16:
+Measured on 2026-08-16:
 
 ```
 host  4x RTX PRO 6000 Blackwell   97,887 MiB each   0% util   4 MiB used   IDLE

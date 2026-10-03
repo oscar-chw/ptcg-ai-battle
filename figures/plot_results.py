@@ -8,8 +8,9 @@ Two panels, because the rows do not share an opponent or an interval method:
          recomputed by report/analyze_results.py (the same function that writes
          results/analysis_output.txt)
   right  PPO against its frozen parent, from figures/ppo_head_to_head.csv, whose `quote`
-         column is copied verbatim from results/ppo_RESULTS.md (intervals as recorded there;
-         the number of games is not recorded, so no interval is recomputed)
+         column is copied verbatim from results/ppo_RESULTS.md (intervals as recorded
+         there). Draws score 0.5 in that evaluator; the game counts are derived from the
+         intervals by figures/ppo_counts.py.
 """
 import csv
 import re
@@ -19,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "report"))
 from analyze_results import read_results, wilson  # noqa: E402
+from ppo_counts import solutions  # noqa: E402
 
 PPO_CSV = ROOT / "figures" / "ppo_head_to_head.csv"
 OUT = ROOT / "figures" / "results.png"
@@ -57,7 +59,9 @@ def ppo_rows():
             if not match:
                 raise ValueError(f"unparseable quote: {row['quote']!r}")
             rate, low, high = (float(x) for x in match.groups())
-            rows.append((row["label"], row["role"], rate, low, high, row["quote"]))
+            derived = ", ".join(f"{s:g}/{g}" for s, g in solutions(row["quote"]))
+            rows.append((row["label"], row["role"], rate, low, high,
+                         f"{row['quote']}  = {derived}"))
     return rows
 
 
@@ -72,12 +76,13 @@ def render():
     panels = [
         (battery_rows(), "Seat-balanced batteries, 400 games each (seat rows 200)",
          "source: results/results.csv, recomputed by report/analyze_results.py; nominal Wilson 95%; "
-         "opponents differ by row, so rows are not pooled"),
+         "opponents differ by row, so rows are not pooled; no draws occurred"),
         (ppo_rows(), "Self-play PPO vs its frozen parent (never submitted)",
-         "source: results/ppo_RESULTS.md, intervals as recorded; game count not recorded"),
+         "source: results/ppo_RESULTS.md, intervals as recorded (not adjusted for picking the best of "
+         "3 arms); draws score 0.5;\nscore/games derived from the intervals by figures/ppo_counts.py"),
     ]
     fig, axes = plt.subplots(2, 1, figsize=(10, 6.6), facecolor=surface,
-                             gridspec_kw={"height_ratios": [6, 4], "hspace": 0.62})
+                             gridspec_kw={"height_ratios": [6, 4], "hspace": 0.75})
     for ax, (rows, title, source) in zip(axes, panels):
         ax.set_facecolor(surface)
         for y, (label, role, rate, low, high, note) in enumerate(reversed(rows)):
@@ -98,7 +103,8 @@ def render():
             ax.spines[side].set_visible(False)
         ax.spines["bottom"].set_color(grid)
         ax.set_xlabel("win rate, % (dashed line: 50%)", color=muted)
-        ax.set_title(title, loc="left", color=ink, fontsize=11, fontweight="bold", pad=18)
+        ax.set_title(title, loc="left", color=ink, fontsize=11, fontweight="bold",
+                     pad=18 + 12 * source.count("\n"))
         ax.text(0, 1.02, source, transform=ax.transAxes, fontsize=8.5, color=muted)
     handles = [plt.Line2D([], [], marker="o", lw=2, ms=7, color=colour[k], label=t)
                for k, t in (("baseline", "baseline / control"), ("candidate", "candidate"),

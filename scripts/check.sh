@@ -15,8 +15,9 @@
 #             scripts/demo.sh (table, headline, engine instructions) with no engine
 #
 # WHAT NEEDS numpy + torch (+ pytest for ppo) -- SKIPPED, NOT PASSED, WITHOUT THEM:
-#   imitation-numeric   model, NumPy-vs-torch parity, export, the four gates, packaging
-#                       imitation/tests_torch  (needs numpy, torch)
+#   imitation-numeric   model, NumPy-vs-torch parity, export, the four gates, packaging,
+#                       the counted serving fallback   imitation/tests_torch  (numpy, torch)
+#                       and demo/model_demo.py on SYNTHETIC boards
 #   ppo                 the 115 ptcg_ppo tests                    ppo/tests
 #                       (needs numpy, torch, pytest)
 #   Requirement: numeric suites need numpy and torch; this script runs them when
@@ -54,7 +55,7 @@ run "report: tests" "$PY" -m unittest discover -s report/tests
 run "imitation: tests (serve flags, strict_get, deck_tracker)" "$PY" -m unittest discover -s imitation/tests
 run "figures: tests (plotted numbers trace to their sources)" "$PY" -m unittest discover -s figures/tests
 run "demo: tests (agents, match loop, no-engine message)" "$PY" -m unittest discover -s demo/tests
-run "demo: scripts/demo.sh with no engine" env -u PTCG_ENGINE_DIR bash scripts/demo.sh
+run "demo: scripts/demo.sh with no engine" env -u PTCG_ENGINE_DIR -u PTCG_PYTHON bash scripts/demo.sh
 
 # The demo itself. Without an engine it must refuse clearly (exit 2, naming the variable).
 if [ -z "${PTCG_ENGINE_DIR:-}" ]; then
@@ -75,6 +76,7 @@ fi
 echo "== numeric suites (interpreter: $NUM_PY) =="
 if has numpy && has torch; then
   run "imitation-numeric: tests" "$NUM_PY" -m unittest discover -s imitation/tests_torch
+  run "demo: model_demo.py (NumPy serving on SYNTHETIC boards, parity check)" "$NUM_PY" demo/model_demo.py
 else
   skip "imitation-numeric (imitation/tests_torch)" "numpy and torch are not importable by $NUM_PY"
 fi

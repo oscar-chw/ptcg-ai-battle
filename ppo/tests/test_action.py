@@ -29,7 +29,7 @@ def stop_at(value: float) -> np.ndarray:
 
 
 # ---------------------------------------------------------------------------
-# The defect the user reported: it cannot stop, and it cannot pass.
+# The defect observed in play: it cannot stop, and it cannot pass.
 # ---------------------------------------------------------------------------
 
 

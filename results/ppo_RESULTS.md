@@ -1,7 +1,11 @@
 # Results — self-play PPO on FIXED-312
 
-Every number below is measured, and every instrument was validated against a
-control before its output was read. Where something is unproven it says so.
+The numbers below were recorded by the PPO project in August 2026; each instrument
+was checked against a control before its output was read, and unproven points are
+marked. The head-to-head intervals are 95% Wilson intervals on a score in which a
+draw or unfinished game counts 0.5; the game counts were not written down, and
+`figures/ppo_counts.py` recovers them from the intervals (240 games for 0.8104, 200 for
+the other rows).
 
 ---
 

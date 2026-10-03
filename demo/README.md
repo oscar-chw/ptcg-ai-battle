@@ -50,6 +50,15 @@ and nothing in this repository depends on it.
   2.5 s. The engine's shuffles are not seeded here, so counts vary slightly between runs.
 ```
 
+## The model demo, no engine
+
+`model_demo.py` needs numpy and torch (`PTCG_PYTHON=... bash scripts/demo.sh` runs it). On a
+tiny SYNTHETIC model and SYNTHETIC boards it prints the NumPy serving forward's action
+probabilities beside torch's, and the compute-parity check over 64 boards: PASS for the
+serving mode the weights were trained with, FAIL for a wrong one. It exits 1 if either
+outcome is not as expected. No real weights or engine data are involved, so it says
+nothing about playing strength.
+
 ## Tests
 
 `python3 -m unittest discover -s demo/tests` needs no engine: the match loop and both agents

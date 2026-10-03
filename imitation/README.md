@@ -91,6 +91,16 @@ Why each exists, from the original records:
   on 0.7926 of decisions. `tests_torch/test_numpy_parity.py` includes the control that
   matters: serving the wrong mode must be *detected*.
 
+**One change from the team's shipped serving file.** On any exception inside `agent()`, the
+team's `main_v7.py` returned a random legal move with no trace: the mechanism by which a
+broken package played at random behind green offline gates. This copy answers with the
+lowest legal indices instead, increments `main_v7.FALLBACKS` and logs each event to
+stderr, following the fix the PPO baseline records for `main_v8.py`
+([../ppo/docs/BASELINE.md](../ppo/docs/BASELINE.md), section 2b; `main_v8.py` itself is not
+in the team records available here). `tests_torch/test_fallback.py` fails if the fallback
+is random or silent again. The minimum-one-pick floor in that fallback is deliberate:
+`main_v7` passes only through its explicit pass branch.
+
 `gate_compute_parity.py` takes an optional `--main-v6` (the earlier unmasked serving file,
 which is not in this repository) to print the size of that old defect beside the fix.
 

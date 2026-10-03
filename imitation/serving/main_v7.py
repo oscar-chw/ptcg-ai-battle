@@ -44,13 +44,18 @@ Inference is hand-written NumPy. Torch is not guaranteed in the sandbox, and
 both prior neural submissions from this project returned ERROR; removing the
 framework removes it from the failure surface.
 
-Fail-closed: any exception anywhere falls back to a legal random choice, because
-returning an illegal index forfeits the game while a random legal one merely
-plays badly.
+Fail-closed, and counted: any exception inside agent()'s guard falls back to the
+lowest legal indices, because returning an illegal index forfeits the game. The
+team's shipped file returned a RANDOM legal choice here with no trace, so a broken
+package played uniformly at random while every offline metric stayed green (the
+"20/32 packages played RANDOM behind a green gate" defect). This consolidated copy
+follows the fix the PPO baseline records for main_v8 (not itself included): the
+fallback is deterministic, every occurrence increments FALLBACKS, and each one is
+logged to stderr with the exception, so a run's log shows how many decisions the
+model did not make.
 """
 import json
 import os
-import random
 import sys
 
 import numpy as np
@@ -66,6 +71,7 @@ except ModuleNotFoundError:
 _W = None
 _DECK = None
 _STATE = {"turn": None, "intra": []}
+FALLBACKS = 0   # decisions answered by the fallback below, not by the model
 _MODE = None
 
 # featurize.FAMILIES indices, mirrored from train_ss.FAM_ACTIVE / FAM_PROMPT.
@@ -206,7 +212,7 @@ def resolve_mode(W, mode=None, strict=False, log=True):
 
     `strict` turns the relation mismatch below into an exception. Tooling (the
     parity gate, a packaging script) should pass strict=True. The agent must not:
-    inside the sandbox a raise here becomes a random legal move on every decision,
+    inside the sandbox a raise here becomes a fallback move on every decision,
     which is strictly worse than a known-wrong graph.
     """
     auto, auto_why = _autodetect(W)
@@ -666,7 +672,7 @@ SELECT_COUNT_BY_BOUNDS = {
 
 
 def agent(obs_dict):
-    global _DECK
+    global _DECK, FALLBACKS
     # to_observation_class raises KeyError on any missing field (e.g. 'logs').
     # It MUST NOT sit outside the guard: an exception escaping agent() returns
     # no action at all, which is how a submission comes back ERROR rather than
@@ -715,8 +721,8 @@ def agent(obs_dict):
         # random and indistinguishable from working.
         #
         # Raising is safe HERE specifically, and only here: this whole block sits
-        # inside the guard below, whose documented behaviour is a random LEGAL
-        # move. So absence costs one badly-played decision instead of a whole game
+        # inside the guard below, whose documented behaviour is a counted, legal
+        # fallback move. So absence costs one badly-played decision instead of a whole game
         # played from a mirrored board. An exception escaping agent() would be an
         # ERROR, which is why the outer read at the top of this function must keep
         # its bare except.
@@ -755,7 +761,7 @@ def agent(obs_dict):
         #
         # Raising is not an option on this line the way it is for the seat above:
         # `picked` is already computed and legal, and discarding a good move over
-        # a bookkeeping gap would trade a real decision for a random one.
+        # a bookkeeping gap would trade a real decision for a fallback one.
         # Measured 6,438,967 of 6,438,967 engine options carry "type", so this
         # sentinel is unreachable on real engine output.
         _STATE["intra"].append({
@@ -763,9 +769,11 @@ def agent(obs_dict):
             "card": chosen.get("cardId") if isinstance(chosen, dict) else None,
         })
         return picked
-    except Exception:
-        # Fail closed: an illegal index forfeits, a random legal one just plays
-        # badly. cg.api validates minCount <= len(action) <= maxCount, and
-        # lo <= hi <= n_opt, so this count is always legal. It floors at 1 for the
-        # same reason the success path does: passing is not the safe default here.
-        return random.sample(range(n_opt), min(max(lo, 1), n_opt))
+    except Exception as err:  # noqa: BLE001
+        # Fail closed: an illegal index forfeits. cg.api validates
+        # minCount <= len(action) <= maxCount, and lo <= hi <= n_opt, so this count
+        # is always legal. It floors at 1 for the same reason the success path does:
+        # passing is not the safe default here. Counted and logged, never silent.
+        FALLBACKS += 1
+        print(f"FALLBACK {FALLBACKS}: {type(err).__name__}: {err}", file=sys.stderr)
+        return list(range(min(max(lo, 1), n_opt)))

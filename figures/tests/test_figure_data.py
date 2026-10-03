@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "figures"))
 import plot_results  # noqa: E402  (matplotlib is imported only inside render())
+import ppo_counts  # noqa: E402
 
 
 class FigureData(unittest.TestCase):
@@ -33,12 +34,25 @@ class FigureData(unittest.TestCase):
         recorded = (ROOT / "results" / "ppo_RESULTS.md").read_text(encoding="utf-8")
         rows = plot_results.ppo_rows()
         self.assertEqual(len(rows), 4)
-        for label, role, rate, low, high, quote in rows:
+        for label, role, rate, low, high, note in rows:
+            quote, derived = note.split("  = ")
             self.assertIn(quote, recorded, label)
+            self.assertRegex(derived, r"^\d+(\.5)?/\d+$")
             self.assertIn(role, {"candidate", "control"})
             self.assertTrue(low <= rate <= high, label)
         best = max(rows, key=lambda r: r[2])
         self.assertEqual((best[2], best[3], best[4]), (0.8104, 0.756, 0.855))
+
+    def test_game_counts_are_the_only_ones_the_intervals_allow(self):
+        got = {r["quote"]: ppo_counts.solutions(r["quote"]) for r in ppo_counts.rows()}
+        self.assertEqual(got, {"0.4875 [0.419, 0.556]": [(97.5, 200)],
+                               "0.7975 [.736,.847]": [(159.5, 200)],
+                               "0.7675 [.704,.821]": [(153.5, 200)],
+                               "0.8104 [.756,.855]": [(194.5, 240)]})
+
+    def test_the_search_can_fail(self):
+        # An interval no half-point score reproduces must come back empty, not forced.
+        self.assertEqual(ppo_counts.solutions("0.8104 [.600,.990]"), [])
 
     def test_an_unparseable_quote_is_refused(self):
         self.assertIsNone(plot_results.QUOTE.match("about 0.81"))

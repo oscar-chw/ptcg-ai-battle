@@ -37,8 +37,8 @@ shows up in whether you win.** Cardinality is the textbook case for learning fro
 outcomes rather than from labels, and it is the single thing self-play can teach
 this model that its corpus cannot.
 
-It is also the defect the user reports seeing in play: *"sometimes it just doesn't
-know when to stop and plays every single possible thing."* That is
+It is also the defect observed in play: the agent sometimes does not know when to
+stop and plays every possible thing. That is
 `order[:maxCount]`, exactly.
 
 ---
@@ -261,8 +261,8 @@ enough to gate every iteration.
 
 - **It does not claim the ladder will move.** Serving-path choice currently
   dominates the ladder signal — the same checkpoint scored 851.5, 305.9 and 133.1
-  on three serving paths. This experiment holds the serving path constant and
-  measures the weights. Whether a better policy survives packaging is a separate
+  in three serving packages (the cause of the drop was not recorded). This experiment
+  holds the serving path constant and measures the weights. Whether a better policy survives packaging is a separate
   question with its own separate experiment.
 - **It does not claim the cardinality head will help.** It claims the champion
   cannot express cardinality, that the corpus cannot teach it, and that outcomes

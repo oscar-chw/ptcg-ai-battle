@@ -7,3 +7,6 @@
   withdrawn" section recording earlier claims that did not survive measurement.
   The source's own header gives the build command, `tectonic docs/architecture.tex` (or
   `pdflatex` twice); it was not re-run here, so the PDF is the original build.
+- [details.md](details.md): the full results table, the negative results, the
+  serving-package scores whose cause was not recorded, and the long form of the README's
+  design decisions, each with its source.
