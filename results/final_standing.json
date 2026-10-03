@@ -1,0 +1,17 @@
+{
+  "competition": "Kaggle Pokemon TCG AI Battle, Simulation leaderboard",
+  "submitted_agent": "BEST1_fixed",
+  "final_simulation_score": 709.1,
+  "final_rank": "2043/6807",
+  "rank": 2043,
+  "ranked_out_of": 6807,
+  "effort": "the team",
+  "strategy_report": {
+    "competition": "Kaggle Pokemon TCG AI Battle Challenge, Strategy track",
+    "track": "Main Track",
+    "kaggle_status": "SUBMITTED_CONFIRMED",
+    "confirmed_on": "2026-09-13",
+    "url": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle-challenge-strategy/writeups/from-imitation-to-reliable-play-a-ptcg-agent-stud"
+  },
+  "source": "Extract of the team's private repository: EVIDENCE.md line 241 (entry E-20260913-REPORT) and artifacts/strategy-report-20260913/RECEIPT.json, fields final_simulation_score and final_rank. The source files are not redistributed because they carry local paths and the competition's engine terms; this extract keeps only the two result fields and the report's confirmation."
+}

@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="730" viewBox="0 0 1280 730" role="img" aria-labelledby="title desc">
+<title id="title">PTCG policy architecture and evidence boundaries</title>
+<desc id="desc">Historical typed entity and legal option policy, trained with game-level splits and behavioral cloning. Instance pointers connect options to entities. Inference returns constrained legal responses to the engine. Evaluation separately checks semantics and playing strength.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#176e75"/></marker></defs>
+<rect width="1280" height="730" fill="#f6fafb"/>
+<style>text{font-family:Arial,sans-serif;fill:#172b3a}.head{font-size:28px;font-weight:700}.sub{font-size:16px;fill:#56707c}.label{font-size:18px;font-weight:700}.body{font-size:15px}.small{font-size:14px;fill:#56707c}</style>
+<text x="42" y="48" class="head">Mechanics, learning, and reliability</text>
+<text x="42" y="80" class="sub">Historical implemented policy path; final archive reconstruction remains incomplete.</text>
+<rect x="42" y="120" width="212" height="126" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="58" y="150" class="label">Observed game</text>
+<text x="58" y="181" class="body">Player-visible state</text>
+<text x="58" y="204" class="body">Engine-provided options</text>
+<text x="58" y="227" class="body">No privileged hidden truth</text>
+<rect x="286" y="120" width="228" height="126" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="302" y="150" class="label">Entity / option encoder</text>
+<text x="302" y="181" class="body">Card identity + numerics</text>
+<text x="302" y="204" class="body">Typed tokens + attention</text>
+<text x="302" y="227" class="body">Instance pointers</text>
+<rect x="546" y="120" width="202" height="126" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="562" y="150" class="label">Policy scores</text>
+<text x="562" y="181" class="body">Pooled state + options</text>
+<text x="562" y="204" class="body">Masked choice scores</text>
+<text x="562" y="227" class="body">Greedy inference</text>
+<rect x="780" y="120" width="205" height="126" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="796" y="150" class="label">Decoder contract</text>
+<text x="796" y="181" class="body">Cardinality constraints</text>
+<text x="796" y="204" class="body">Valid combinations</text>
+<text x="796" y="227" class="body">Concrete option indices</text>
+<rect x="1017" y="120" width="221" height="126" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="1033" y="150" class="label">Official engine</text>
+<text x="1033" y="181" class="body">Transitions and chance</text>
+<text x="1033" y="204" class="body">Next observation</text>
+<text x="1033" y="227" class="body">Terminal outcome</text>
+<path d="M254 182 L286 182" stroke="#176e75" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M514 182 L546 182" stroke="#176e75" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M748 182 L780 182" stroke="#176e75" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M985 182 L1017 182" stroke="#176e75" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M1127 246V282H148V246" stroke="#176e75" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="463" y="306" class="sub">Execute one response, observe again</text>
+<text x="42" y="356" class="label">LEARNING</text>
+<rect x="42" y="376" width="265" height="110" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="58" y="406" class="label">Demonstrations</text>
+<text x="58" y="437" class="body">Exact deck identity</text>
+<text x="58" y="460" class="body">Recorded legal decisions</text>
+<rect x="339" y="376" width="265" height="110" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="355" y="406" class="label">Whole-game split</text>
+<text x="355" y="437" class="body">Training / validation games</text>
+<text x="355" y="460" class="body">Contested-choice diagnostics</text>
+<rect x="636" y="376" width="265" height="110" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="652" y="406" class="label">Behavioral cloning</text>
+<text x="652" y="437" class="body">Demonstrated-action loss</text>
+<text x="652" y="460" class="body">No claim of completed RL</text>
+<rect x="933" y="376" width="305" height="110" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="949" y="406" class="label">Model weights</text>
+<text x="949" y="437" class="body">Training / serving schema match</text>
+<text x="949" y="460" class="body">Export and decoder checks</text>
+<path d="M307 430 L339 430" stroke="#176e75" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M604 430 L636 430" stroke="#176e75" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M901 430 L933 430" stroke="#176e75" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="42" y="535" class="label">SEPARATE EVIDENCE GATES</text>
+<rect x="42" y="555" width="374" height="112" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="58" y="585" class="label">Representation and runtime</text>
+<text x="58" y="616" class="body">Masks, pointers, values, legality</text>
+<text x="58" y="639" class="body">Complete move-sequence equivalence</text>
+<rect x="448" y="555" width="374" height="112" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="464" y="585" class="label">Playing strength</text>
+<text x="464" y="616" class="body">Balanced seats, fixed opponents, budgets</text>
+<text x="464" y="639" class="body">Raw counts, uncertainty, failures</text>
+<rect x="854" y="555" width="384" height="112" rx="10" fill="white" stroke="#b7d0d5" stroke-width="1.5"/>
+<text x="870" y="585" class="label">Proposed improvement loop</text>
+<text x="870" y="616" class="body">Verified search teacher -&gt; apprentice</text>
+<text x="870" y="639" class="body">Fresh games required before promotion</text>
+<text x="42" y="706" class="small">Original schematic. Historical branches are not a single combined deployed agent.</text>
+</svg>

@@ -1,0 +1,96 @@
+{
+  "schema": "ptcg-aggregate-reproduction/v1",
+  "purpose": "Public-safe arithmetic reproduction from inspected historical aggregate records; no final-agent gameplay or training reproduction.",
+  "results_csv_sha256": "66f2e8482c98e7ca409b0fdb7e0238fae93edc56d9fdaabfb9454ccb8e52dbf9",
+  "source_access": "Original records are not redistributed. source-records labels below are sanitized relative archival labels, not files shipped with this capsule. SHA256 identifies the inspected source bytes but does not establish an externally authenticated chain of custody.",
+  "sources": {
+    "baseline": {
+      "artifact_label": "source-records/baseline_400_summary.json",
+      "sha256": "9872d6ae11442478fe7cb85b73e85df1ccb5f63bcf700402f44d4effdfd17531",
+      "selected_fields": [
+        "/wins",
+        "/losses",
+        "/draws",
+        "/games",
+        "/turn_order/first",
+        "/turn_order/second"
+      ],
+      "scope": "Historical rule/search baseline versus cross-deck control. First/second rows are disjoint strata of these same 400 games, not additional experiments. Seat losses are derived as games minus wins; zero draws follows from the overall zero-draw count."
+    },
+    "ismcts_same": {
+      "artifact_label": "source-records/ismcts_head_to_head400.json",
+      "sha256": "01a94ad31e2234a8e17cc763d2930c677f3c75f93450b0b4adec19ab0a9b21c9",
+      "selected_fields": [
+        "/wins",
+        "/losses",
+        "/draws",
+        "/games",
+        "/same_deck",
+        "/complete"
+      ],
+      "scope": "Historical ISMCTS candidate versus frozen same-deck baseline; 400 games, balanced seats. Candidate-specific result, not a claim about all ISMCTS."
+    },
+    "ismcts_cross": {
+      "artifact_label": "source-records/ismcts_battery400.json",
+      "sha256": "db98201855034235c0519d85bba47db28ce0535a1c2ef4475e53fbb674c8d749",
+      "selected_fields": [
+        "/wins",
+        "/losses",
+        "/draws",
+        "/games",
+        "/same_deck",
+        "/complete"
+      ],
+      "scope": "Historical ISMCTS cross-deck battery; separate opponent condition from the same-deck experiment."
+    },
+    "gumbel_same": {
+      "artifact_label": "source-records/gumbel_head_to_head400.json",
+      "sha256": "738b96b791d8deeba3060717cac99e5f12ede1266fd24a2c2f4ec55d99867a2c",
+      "selected_fields": [
+        "/results/0/wins",
+        "/results/0/losses",
+        "/results/0/draws",
+        "/results/0/games",
+        "/rng"
+      ],
+      "scope": "Historical Gumbel candidate versus frozen same-deck baseline. Source RNG is seeded_gumbel_noise_unpaired_official_engine_shuffle. This capsule makes no paired treatment-effect inference."
+    },
+    "brier": {
+      "artifact_label": "source-records/value_noskill.json",
+      "sha256": "231da2b2e1dbf7ed377344dbd5ddd40af842407b0656dd10a5d18747a8ce9d67",
+      "selected_fields": [
+        "/no_skill_brier/validation",
+        "/validation_split/rows",
+        "/validation_split/episodes",
+        "/validation_split/wdl_row_rate"
+      ],
+      "scope": "Historical validation class-frequency constant predictor; 17392 decision rows clustered in 185 games. Rates are published to six decimals. This is multiclass sum Brier loss, not a counterfactual action-value result."
+    },
+    "engine": {
+      "artifact_label": "source-records/engine_speed_report2.txt",
+      "sha256": "237e7fa2b17e2049d8ee3ff85dbf5b8399afe733ae10c7901581f18290ae0327",
+      "selected_fields": [
+        "lines 3-15: timing and target",
+        "line 105: complete-game and move-sequence parity",
+        "lines 98-112: platform and implementation scope"
+      ],
+      "scope": "Incremental optimization versus preceding implementation, exact-build macOS arm64 workload. Fifteen rotating timing batches per arm, twenty games each. Outcome/full-sequence parity is a separate fifty-game check. Additional 2x target failed; no Linux or GPU acceleration result."
+    },
+    "rollout": {
+      "artifact_label": "source-records/p2_selfplay_rollout.json",
+      "sha256": "b3e20e5dc2ac4874e88bafef9a922c7c1b3b5d91f8926a4332a8bb740830c587",
+      "selected_fields": [
+        "/l1_engine/episodes_completed",
+        "/l1_engine/episodes_requested",
+        "/decision_records",
+        "/l1_engine/illegal_actions"
+      ],
+      "scope": "Historical instrumentation smoke: completed episodes and legal decisions. No completed training, convergence, strategic strength or universal correctness claim."
+    }
+  },
+  "limitations": [
+    "Wilson intervals are nominal binomial intervals for individual recorded samples, not uncertainty over all opponents or dependence-adjusted treatment effects.",
+    "The capsule contains aggregate values and does not recreate games, training, engine behavior, archived binaries or the full evaluation environment.",
+    "No raw replays, model weights, engine code, personal identities, credentials or account/remote state are included."
+  ]
+}

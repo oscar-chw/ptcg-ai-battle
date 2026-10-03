@@ -1,0 +1,15 @@
+AGGREGATE ARITHMETIC REPRODUCTION — no games or training executed
+Nominal Wilson 95% intervals; draws count as non-wins.
+baseline: 198/400 = 49.50% [44.63, 54.38]
+baseline_first: 116/200 = 58.00% [51.07, 64.63]
+baseline_second: 82/200 = 41.00% [34.42, 47.92]
+ismcts_same: 111/400 = 27.75% [23.59, 32.33]
+ismcts_cross: 108/400 = 27.00% [22.88, 31.55]
+gumbel_same: 204/400 = 51.00% [46.11, 55.87]
+Baseline first-minus-second seat difference: 17.00 percentage points (descriptive)
+Brier constant baseline: 0.487022 from rounded class rates; 17392 rows / 185 games; recorded 0.487022
+Engine incremental speed ratio: 1.497701x; macOS arm64; 50 parity games / 9844 moves
+Engine additional 2x target: NOT MET; no portability or playing-strength inference.
+Rollout instrumentation: 32/32 complete; 5513 records; 0 illegal actions
+Scope: experiments remain separate; seat strata reuse baseline games. Gumbel engine shuffles were unpaired. No pooled strength estimate.
+PASS: arithmetic, internal counts and aggregate snapshot SHA256; original source bytes and full environment are not reproduced.
