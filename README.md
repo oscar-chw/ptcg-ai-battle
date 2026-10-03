@@ -13,8 +13,12 @@ submitted to the Kaggle strategy track
 183.1 against the team's 800.5 champion.** The serving forward attended over padding the
 weights were trained to mask, and the check collated its torch reference the same wrong
 way, so both sides agreed ([gate_compute_parity.py](imitation/gates/gate_compute_parity.py),
-docstring). [demo/model_demo.py](demo/model_demo.py) reproduces that false green on a
-SYNTHETIC model, next to the corrected check catching it. The repository is about catching
+docstring). How much of the gap that defect caused is the team's diagnosis, not a
+measurement: the 800.5 champion was itself served without masks or relations, with
+recorded served-vs-trained agreement 0.8736 against 0.8200 for the two failed arms (team
+records, private). What is certain is that the defect existed and the check could not see
+it; [demo/model_demo.py](demo/model_demo.py) reproduces that false green on a SYNTHETIC
+model, next to the corrected check catching it. The repository is about catching
 failures like that before they ship: four gates check the built package, and every win
 rate carries an interval and a control.
 
@@ -78,7 +82,7 @@ synthetic. Intervals are nominal Wilson 95%.
 | Result | Value | Source |
 |---|---|---|
 | **Final standing, `BEST1_fixed`** | **rank 2,043 of 6,807; score 709.1** | [final_standing.json](results/final_standing.json) |
-| Value head vs a zero-skill constant | value head Brier 0.5771; a class-frequency constant scores 0.487022 on 17,392 validation rows with no draws, so the head did worse than no skill (the team had compared it with a 0.6667 three-class reference) | [analysis_output.txt](results/analysis_output.txt), [details](docs/details.md#the-value-head) |
+| Value head vs a zero-skill constant | value head Brier 0.5771; a class-frequency constant scores 0.487022 on 17,392 validation rows with no draws, so the head did worse than no skill **in aggregate** (the team had compared it with a 0.6667 three-class reference; a later head was useful late in games, see details) | [analysis_output.txt](results/analysis_output.txt), [details](docs/details.md#the-value-head) |
 | ISMCTS, rejected | 111/400 = 27.75% [23.59, 32.33] vs same-deck baseline; 108/400 cross-deck | [analysis_output.txt](results/analysis_output.txt) |
 | PPO vs frozen parent (never submitted) | 0.8104 [0.756, 0.855] on 240 games; control, parent vs itself, 0.4875 [0.419, 0.556] on 200 | [ppo_RESULTS.md](results/ppo_RESULTS.md), [ppo_counts.py](figures/ppo_counts.py) |
 
@@ -86,7 +90,8 @@ PPO caveats: the game counts were not recorded; they are the only ones the inter
 (194.5/240, 97.5/200), and the half-points mean draws scored 0.5 there, not 0 as in the
 battery rows. 0.8104 is the best of three arms on the same opponent; Bonferroni over 3 gives
 [0.743, 0.863]. Against an opponent never trained against: PPO 0.7167 [0.663, 0.765],
-champion 0.5333 [0.409, 0.654] on only about 60 games.
+champion 0.5333 [0.409, 0.654] on only about 60 games (why the samples differ is not
+recorded).
 
 [docs/details.md](docs/details.md) has the full table, the negative results, per-deck
 accuracies with the one recorded baseline, and one checkpoint that scored 851.5, 305.9 and
@@ -122,7 +127,7 @@ ppo/         STOP head, PPO objective, advantage, opponent pool; 115 tests; desi
 report/      the case study and analyze_results.py (standard library)
 results/     every number as a file;  figures/  the figure, PPO count recovery, tests
 demo/        live match on your engine; model demo on SYNTHETIC boards
-docs/        architecture paper, details.md;  engine/  GPU slice, numbers only
+docs/        architecture paper, details.md;  engine/  GPU prototype notes, never used
 ```
 
 The figure at the top shows the data flow: replays to tokens, training, NumPy export with
@@ -135,7 +140,7 @@ stamped serving flags, then one script that builds and gates the package.
 - **NumPy at inference.** Torch was not guaranteed in the sandbox; the cost is two forwards
   that can drift, which the parity and serve-stamp gates police.
 - **No search shipped.** ISMCTS lost, Gumbel showed nothing, the value head scored worse
-  than a constant predictor, and search made repeated runs disagree (132/200 outcomes).
+  than a constant predictor in aggregate, and search made repeated runs disagree (132/200).
 - **PPO never submitted.** No reason is recorded; the opponent pool was not wired in and the
   offline harness failed its own control.
 - **A counted serving fallback.** The team's file played a random legal move on any exception,
@@ -186,9 +191,8 @@ Candidate lessons from conclusions the records state; drafts for Oscar to confir
    DRAFT — Oscar to confirm
 
 4. **Passing every gate does not show the deployed agent is the trained one.** A parity check
-   built the same wrong way as the serving forward read green while two submissions scored
-   256.7 and 183.1 against 800.5, and a second build path re-shipped a fixed defect, scoring
-   260.9 and 156.9. The packaging became four gates run on the built package
+   built the same wrong way as the serving forward could not see that the served function
+   differed from the trained one, and a second build path re-shipped a fixed defect. The packaging became four gates run on the built package
    ([imitation/README.md](imitation/README.md), "Packaging";
    [gate_compute_parity.py](imitation/gates/gate_compute_parity.py)).
 

@@ -205,7 +205,7 @@ def rloo_advantages(values: dict[str, float],
     problem and injects bias rather than removing it.
 
     Critic-free is the right choice here rather than a fallback: the project's own
-    value head measured Brier 0.5771, worse than the 0.487022 a class-frequency
+    value head measured Brier 0.5771, in aggregate worse than the 0.487022 a class-frequency
     constant scores on that corpus's validation split (the 0.6667 uniform reference
     it was first compared with assumes draws the data does not have), and it is
     switched off at serving. A baseline with no skill adds variance.

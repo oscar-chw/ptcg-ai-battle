@@ -25,7 +25,7 @@ row are not on the same scale.
 | Self-play instrumentation gate | 32/32 games, 5,513 decision records, 0 illegal actions: mechanics only, no learning claim | [analysis_output.txt](../results/analysis_output.txt) |
 | PPO vs its frozen parent (never submitted) | 0.8104 [0.756, 0.855], score 194.5/240; best of three arms against the same opponent, Bonferroni-adjusted (3 arms) [0.743, 0.863]. Control, the parent against itself, 0.4875 [0.419, 0.556], 97.5/200 | [ppo_RESULTS.md](../results/ppo_RESULTS.md); counts: `python3 figures/ppo_counts.py` |
 | PPO vs an opponent never trained against | 0.7167 [0.663, 0.765] for PPO, 0.5333 [0.409, 0.654] for the champion (the intervals allow 32/60 for the champion; the PPO count is ambiguous, 210/293 or 215/300) | [ppo_RESULTS.md](../results/ppo_RESULTS.md), gate 3 |
-| GPU engine slice, M2 Max, Metal | 110.14M env-steps/s and 572.2k games/s at batch 262,144; a partial game, not the full rules; the port is not published, so this is not reproducible here | [engine/README.md](../engine/README.md) |
+| GPU prototype, M2 Max, Metal | 110.14M env-steps/s at batch 262,144 for a batched Rust/GPU prototype of a simplified game-loop slice, verified against its own CPU reference; not rule-complete, not parity-tested against the official engine, never used for training, not published | [engine/README.md](../engine/README.md) |
 | This repository's tests | 115 ppo (pytest), 33 imitation numeric, 19 imitation stdlib, 12 demo, 5 report, 6 figures (unittest) | `bash scripts/check.sh` |
 
 ## Negative results
@@ -51,12 +51,19 @@ serving-path effect. Ladder drift is smaller than the spread: the identical `FIX
 package scored 800.5 and 851.5 two days apart (same file, section 1), but that is one
 repeat, not a noise estimate.
 
-The serving-forward defects whose cause *was* recorded are these:
+The serving-forward defects the team recorded with a diagnosed cause are these:
 
-- two submissions scored 256.7 and 183.1 against the 800.5 champion because the old
-  serving forward attended over padding and dropped the relation bias the weights were
-  trained with, while a parity check that collated torch the same wrong way read green
-  ([gate_compute_parity.py](../imitation/gates/gate_compute_parity.py), docstring);
+- two submissions trained with padding masks and relations, and served by a forward that
+  attended over padding and dropped the relation bias, scored 256.7 and 183.1 against the
+  800.5 champion, while a parity check that collated torch the same wrong way read green
+  ([gate_compute_parity.py](../imitation/gates/gate_compute_parity.py), docstring). The
+  link from defect to score is the team's diagnosis, not a controlled measurement: the
+  champion was itself served by the same unmasked v6 forward. The team's ledger records
+  served-vs-trained argmax agreement of 0.8200 for those arms and 0.8736 for the champion.
+  The repository's packaging notes record a third figure, 0.7926, for the v6 forward
+  against "its own checkpoint" in a packaging run
+  ([package_arms.sh](../imitation/serving/package_arms.sh)); which checkpoint that was is
+  not recorded, so the three are not one series;
 - a second build path shipped a fixed defect again 19 hours later, scoring 260.9 and 156.9
   ([imitation/README.md](../imitation/README.md), "Packaging");
 - a sweep of 32 packages found 3 correct, 9 importing with all card tags silently zero, and
@@ -80,6 +87,15 @@ team's private repository and are not included here, and they do not state that 
 evaluations used identical rows. So the comparison is between two numbers on the same
 corpus and split definition, not a paired measurement.
 
+The aggregate also hides where the signal is. The team's later architecture notes call
+the "noise" verdict a mis-diagnosis: a later value head (a different checkpoint from the
+0.5771 one) had aggregate Brier 0.5282 against the 0.4870 base rate, which hid a phase
+split: worse than the base rate for the first 40% of a game, but Brier 0.331 and 82.8%
+accuracy in the final tenth. The notes conclude that late-game-only search would steer on
+signal (team records, private). So "worse than no skill" holds in aggregate only, and an
+aggregate metric hid where the value head was useful. Nothing in this repository tested a
+late-game search.
+
 ## Design decisions, long form
 
 **Imitation for the submitted agent; RL only as a fine-tune of it.** The submitted agent is
@@ -96,9 +112,8 @@ instrumentation gate but had not demonstrated a learning improvement (REPORT.md,
 **Hand-written NumPy at inference, torch only to train.** Torch is not guaranteed in the
 submission sandbox, and both earlier neural submissions returned ERROR
 ([main_v7.py](../imitation/serving/main_v7.py), module docstring). The price is two
-implementations of one forward pass that can drift apart: the 256.7 and 183.1 scores above,
-and an old serving forward that agreed with its own checkpoint on 0.7926 of decisions
-([imitation/README.md](../imitation/README.md)). The compute-parity and serve-stamp gates
+implementations of one forward pass that can drift apart: the v6 forward agreed with
+trained checkpoints on only 0.7926 to 0.8736 of decisions (above).  The compute-parity and serve-stamp gates
 pay for this choice; `demo/model_demo.py` shows, on a SYNTHETIC model, a badly built
 parity check reading a false PASS and the correct one catching the wrong mode.
 
@@ -106,7 +121,7 @@ parity check reading a false PASS and the correct one catching the wrong mode.
 108/400 and was rejected; Gumbel won 204/400, no evidence either way. The case study puts
 the loss on that implementation (beliefs, transition fidelity, rollout evaluation), not on
 search in general (REPORT.md, section 5). Two further recorded costs: the value head that
-would steer a search scored worse than a constant predictor (next section), so it is
+would steer a search scored worse than a constant predictor in aggregate (above), so it is
 unused; and identical search-enabled arms agreed on 132/200 outcomes against 200/200
 without search (REPORT.md, section 4).
 

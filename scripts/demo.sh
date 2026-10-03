@@ -37,9 +37,10 @@ print("Final Simulation standing of %s: rank %s of %s, score %s (source: %s)." %
     s["final_simulation_score"], "results/final_standing.json"))
 '
 echo "A parity check built the wrong way read green while two submissions scored 256.7 and"
-echo "183.1 against an 800.5 champion (imitation/gates/gate_compute_parity.py, docstring)."
-echo "The value head scored Brier 0.5771, worse than the 0.487022 a zero-skill constant scores"
-echo "on 17,392 validation rows (the Brier line above; docs/details.md, 'The value head')."
+echo "183.1 against an 800.5 champion; the team diagnosed the defect as the cause, which was"
+echo "not measured (imitation/gates/gate_compute_parity.py, docstring)."
+echo "In aggregate the value head scored Brier 0.5771, worse than the 0.487022 a zero-skill"
+echo "constant scores on 17,392 validation rows (docs/details.md, 'The value head')."
 
 echo
 echo "== 3. PPO head-to-head: game counts recovered from the recorded intervals =="

@@ -11,8 +11,9 @@ random boards. What it shows is the mechanism, not playing strength:
 1. the hand-written NumPy forward that ships to the sandbox scores the legal options of
    one board, next to torch's scores for the same weights;
 2. the same weights served with the wrong serving mode (no padding masks, no relation
-   bias) choose differently: the defect behind two recorded ladder scores of 256.7 and
-   183.1 against an 800.5 champion;
+   bias) choose differently: the defect the team diagnosed behind two ladder scores of
+   256.7 and 183.1 against an 800.5 champion (a diagnosis, not a measurement: the
+   champion was itself served unmasked);
 3. a parity check whose torch reference is built the same wrong way (no masks, no
    relations, as the team's old export-parity check did) reads PASS on that wrong
    serving mode: the false green that let those packages ship;
@@ -96,9 +97,10 @@ def main():
         print(f"  {name:<38} gap {gap:.2e}, {flips:>2}/{N_BOARDS} choices differ -> "
               f"{verdict} {note}".rstrip())
         ok &= passed == want
-    print("\nA check built the same wrong way as the serving code agrees with it. The team's"
-          "\nrecords put two ladder scores of 256.7 and 183.1, against a champion's 800.5,"
-          "\nbehind exactly that green light (imitation/gates/gate_compute_parity.py).")
+    print("\nA check built the same wrong way as the serving code agrees with it, so it cannot"
+          "\nsee the defect. The team shipped packages with this defect behind such a check;"
+          "\nhow much of their ladder gap the defect caused was diagnosed, not measured"
+          "\n(imitation/gates/gate_compute_parity.py, docstring).")
     return 0 if ok else 1
 
 

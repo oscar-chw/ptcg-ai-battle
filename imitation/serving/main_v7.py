@@ -10,8 +10,11 @@ MASK_PAD_STATE on. featurize.build_tokens pads every observation to 192 state an
 Training masks those out of attention and out of the PMA pool and adds a typed
 relational bias to the attention logits; v6 attends over the PADs as if they were
 board entities and adds no bias at all, so the same weights are evaluated on a
-different function from the one they were fit to. Two Kaggle submissions scored
-256.7 and 183.1 against the champion's 800.5 through exactly that gap.
+different function from the one they were fit to. Two Kaggle submissions served
+that way scored 256.7 and 183.1 against the champion's 800.5; the team attributed the
+gap to this defect, a diagnosis rather than a controlled measurement, since the
+champion was itself served by v6 (served-vs-trained agreement 0.8736, against 0.8200
+for those arms).
 
 Each fix mirrors a named site in the training code:
 
@@ -40,9 +43,11 @@ No search. The value head is deliberately unused — it measured Brier 0.5771 on
 the held-out split of the 926-game Sixth Sense corpus. The 0.6667 three-class
 uniform reference it was first compared with is the wrong one, since that data has
 no draws: the class-frequency constant on the corpus's 185-game validation split
-scores 0.487022, so the value head did WORSE than a zero-skill predictor (the
-team's later win-probability notes say the same). Steering a search with it would
-be steering by worse than noise.
+scores 0.487022, so in aggregate the value head did worse than a zero-skill
+predictor. The team later called the "noise" verdict a mis-diagnosis: a later
+value head with aggregate Brier 0.5282 was worse than the base rate for the first
+40% of a game but scored Brier 0.331 (82.8% accuracy) in the final tenth, so a
+late-game-only search may have signal to steer on. This file does not use it.
 
 Inference is hand-written NumPy. Torch is not guaranteed in the sandbox, and
 both prior neural submissions from this project returned ERROR; removing the

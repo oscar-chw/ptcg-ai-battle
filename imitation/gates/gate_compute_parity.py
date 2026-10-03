@@ -6,8 +6,11 @@ its torch side with `collate` -- which marks the whole padded width valid and
 never builds a relation matrix -- so it compares the NumPy agent against a torch
 model running WITHOUT the padding masks and WITHOUT the relational bias the
 checkpoint was actually trained with. Both sides are wrong in the same way and
-the gate reads green. Two submissions scored 256.7 and 183.1 against a 800.5
-champion behind exactly that green light.
+the gate reads green. Two submissions trained with masks and relations and served
+without them scored 256.7 and 183.1 against a 800.5 champion while it read green.
+The team attributed the gap to this defect; that is a diagnosis, not a controlled
+measurement, since the champion was itself served without masks or relations
+(recorded served-vs-trained agreement 0.8200 for those arms, 0.8736 for the champion).
 
 This gate rebuilds the torch side the way TRAINING ran it, read from the run
 manifest:
