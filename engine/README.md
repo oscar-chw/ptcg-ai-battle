@@ -17,8 +17,9 @@ reproduced from this repository.
 The measured slice implements setup and shuffle, drawing, energy attachment, attacks with
 weakness and resistance, knock-outs, prize taking, promotion, retreat, benching, three win
 conditions, the legal-action mask and the observation. The port's own notes call that
-"5-10% of the opcode surface". Separately, the port's card-effect VM covers 90.3% of the
-card database's instructions, but the full game loop, main-phase option generation and the
+"5-10% of the opcode surface". Separately, of the card database's effect instructions,
+29.6% are guards that need no code and the port's VM has bodies for another 60.7%; 44 live
+opcodes are still missing. The full game loop, main-phase option generation and the
 selection continuations are recorded as "not started". So the prototype cannot play a real
 game, and the throughput below is for the slice only.
 
@@ -38,14 +39,16 @@ in the slice.
 Peak for the slice: 110.14M env-steps/s at batch 262,144. Small batches are
 dispatch-bound; the largest lost 40% of the peak when its state no longer fit one storage
 binding and contended with the OS for unified memory. On the same machine the port's own
-CPU reference ran the slice at 3.19M env-steps/s on one core and 22.82M on 12 cores.
+CPU reference ran the slice at 3.19M env-steps/s on one core and 22.82M on 12 cores. The
+raw benchmark output stays in the private port repository.
 
 **Verification is internal only.** The GPU path was checked against the port's own Rust CPU
 reference over 4,096 seeded games of 48 steps: state, legal mask, done flag and reward
 exact, observation within 1e-6. That shows the GPU and CPU versions of the *port* agree; it
-says nothing about agreement with the official engine, which was never compared. The port's
-213 Rust tests (passing when re-run on 2026-10-03) likewise test the port's own components,
-not fidelity to the official rules.
+says nothing about agreement with the official engine, which was never compared. Of the
+213 Rust tests that passed when re-run on 2026-10-03, 18 exercise a wrapper around the
+official engine (the port's oracle) and the rest test the port's own components; none
+compares the port's rules with the official engine's.
 
 ## What the numbers do not mean
 

@@ -112,10 +112,11 @@ instrumentation gate but had not demonstrated a learning improvement (REPORT.md,
 **Hand-written NumPy at inference, torch only to train.** Torch is not guaranteed in the
 submission sandbox, and both earlier neural submissions returned ERROR
 ([main_v7.py](../imitation/serving/main_v7.py), module docstring). The price is two
-implementations of one forward pass that can drift apart: the v6 forward agreed with
-trained checkpoints on only 0.7926 to 0.8736 of decisions (above).  The compute-parity and serve-stamp gates
-pay for this choice; `demo/model_demo.py` shows, on a SYNTHETIC model, a badly built
-parity check reading a false PASS and the correct one catching the wrong mode.
+implementations of one forward pass that can drift apart: the recorded agreements of the
+v6 forward with trained checkpoints (0.7926, 0.8200 and 0.8736 above) come from different
+checkpoints and are not one series, but none is close to 1. The compute-parity and
+serve-stamp gates pay for this choice; `demo/model_demo.py` shows, on a SYNTHETIC model, a
+badly built parity check reading a false PASS and the correct one catching the wrong mode.
 
 **Search lost; the shipped policy is one greedy forward pass.** ISMCTS won 111/400 and
 108/400 and was rejected; Gumbel won 204/400, no evidence either way. The case study puts
