@@ -67,9 +67,10 @@ real subject became *how to know a result is true*.
 Methods are credited in [report/REFERENCES.md](report/REFERENCES.md) and
 [ppo/docs/RESEARCH.md](ppo/docs/RESEARCH.md).
 
-TODO-OSCAR: name your own contributions to the competition work (decisions made,
-experiments designed, code written), as distinct from the team's and from this
-AI-agent-built consolidation.
+**Who did what.** This was a team entry; teammates are not named. By Oscar's account, he did the
+project's engineering, experiments and analysis himself. The folders recorded as team work
+(`imitation/`, `report/`) keep "all rights reserved" until the team agrees to a licence. The code
+was implemented with AI coding agents under Oscar's design and review.
 
 ## Results (real numbers with their source; synthetic clearly labelled)
 
@@ -158,8 +159,8 @@ Sources: [docs/details.md](docs/details.md).
   numbers are records: their drivers and the 45M checkpoint are not included.
 - **Ladder scores drift**: one package scored 800.5 and 851.5 two days apart
   ([ppo/docs/BASELINE.md](ppo/docs/BASELINE.md)). Only the final standing is the result.
-- TODO-OSCAR: why the team submitted `BEST1_fixed` rather than `FIXED-312` (851.5 mid-competition),
-  and whether `FIXED-312` was also a final selection and where it finished.
+- **Final submission.** An earlier checkpoint (`BEST1_fixed`) was the final submission; the
+  stronger `FIXED-312` (851.5 mid-competition) could not be swapped in before the deadline.
 - **Pokemon names are third-party trademarks**; no artwork, card text or engine files.
 - **Licence, split by authorship.** The root MIT licence ([LICENSE](LICENSE)) covers Oscar's
   parts only: `ppo/`, `demo/`, `scripts/`, `figures/`, `.github/`, `engine/README.md` and this
@@ -169,31 +170,23 @@ Sources: [docs/details.md](docs/details.md).
 
 ## What I learned
 
-Candidate lessons from conclusions the records state; drafts for Oscar to confirm or strike.
+Lessons from conclusions the records state, confirmed by Oscar on 2026-10-03.
 
 1. **A threshold can be met by a model with no skill.** The constant predictor scores Brier
    0.487022, so a gate of "Brier below 0.5" would admit zero skill; a value-loss gate needs
    that baseline beside it ([report/REPORT.md](report/REPORT.md) section 4).
-
-   DRAFT — Oscar to confirm
 
 2. **A sophisticated method can lose to a plain baseline, and the loss belongs to the
    implementation.** ISMCTS won 111/400 and 108/400 and was rejected "in our evaluated
    implementation, not as a general research direction"
    ([report/REPORT.md](report/REPORT.md) section 5).
 
-   DRAFT — Oscar to confirm
-
 3. **A go/no-go gate only means something if a miss stops the line.** The older distillation
    line scored 0.376667 against a 0.55 gate, never passed, and was not carried forward
    ([results/negative_results.md](results/negative_results.md) section 2).
-
-   DRAFT — Oscar to confirm
 
 4. **Passing every gate does not show the deployed agent is the trained one.** A parity check
    built the same wrong way as the serving forward could not see that the served function
    differed from the trained one, and a second build path re-shipped a fixed defect. The packaging became four gates run on the built package
    ([imitation/README.md](imitation/README.md), "Packaging";
    [gate_compute_parity.py](imitation/gates/gate_compute_parity.py)).
-
-   DRAFT — Oscar to confirm
