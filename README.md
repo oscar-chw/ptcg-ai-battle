@@ -22,6 +22,10 @@ model, next to the corrected check catching it. The repository is about catching
 failures like that before they ship: four gates check the built package, and every win
 rate carries an interval and a control.
 
+Also prototyped: a batched Rust/GPU simulator of a simplified game loop, **~110M environment
+steps/s on an M2 Max**, its GPU output checked step by step against a CPU reference
+([GPU prototype](#gpu-prototype-simplified-game-loop); not rule-complete, code private).
+
 ```bash
 bash scripts/demo.sh    # standard-library python3, no engine: results table, headline, PPO game counts
 bash scripts/check.sh   # every suite that runs without the engine
