@@ -3,24 +3,24 @@
 A case study in verifying that a game-AI result is real: imitation learning, self-play PPO
 and search baselines for the Kaggle Pokemon TCG AI Battle.
 
-The team's submitted agent, `BEST1_fixed`, finished **rank 2,043 of 6,807 on the final
-Simulation leaderboard, score 709.1**, no medal
-([results/final_standing.json](results/final_standing.json)). The team's write-up was
-submitted to the Kaggle strategy track
+The team's submitted agent, `BEST1_fixed`, finished **rank 2,043 of 6,807 teams on the
+Simulation leaderboard, score 709.1**, no medal, as read on 2026-09-13 and recorded as
+final; later movement was not checked ([results/final_standing.json](results/final_standing.json)).
+The team's write-up was submitted to the Kaggle strategy track
 ([write-up](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle-challenge-strategy/writeups/from-imitation-to-reliable-play-a-ptcg-agent-stud)).
 
 **A parity check built the wrong way read green while two submissions scored 256.7 and
-183.1 against the team's 800.5 champion.** The serving forward attended over padding the
-weights were trained to mask, and the check collated its torch reference the same wrong
-way, so both sides agreed ([gate_compute_parity.py](imitation/gates/gate_compute_parity.py),
+183.1 against the team's 800.5 champion.** A teammate's review of the serving path raised
+the missing masks. The serving forward attended over padding the weights were trained to
+mask, and the check collated its torch reference the same wrong way, so both sides agreed ([gate_compute_parity.py](imitation/gates/gate_compute_parity.py),
 docstring). How much of the gap that defect caused is the team's diagnosis, not a
 measurement: the 800.5 champion was itself served without masks or relations, with
 recorded served-vs-trained agreement 0.8736 against 0.8200 for the two failed arms (team
 records, private). What is certain is that the defect existed and the check could not see
 it; [demo/model_demo.py](demo/model_demo.py) reproduces that false green on a SYNTHETIC
 model, next to the corrected check catching it. The repository is about catching
-failures like that before they ship: four gates check the built package, and every win
-rate carries an interval and a control.
+failures like that before they ship: four gates check the built package, every battery
+and PPO win rate carries a Wilson interval, and the PPO rows a self-play control.
 
 Also prototyped: a batched Rust/GPU simulator of a simplified game loop, **~110M environment
 steps/s on an M2 Max**, its GPU output checked step by step against a CPU reference
@@ -48,8 +48,9 @@ not guaranteed, and it is ranked on a ladder of simulated games.
 
 The hard part was knowing what was deployed. Besides the false-green parity check above, a
 second build path re-shipped a fixed defect 19 hours later (260.9 and 156.9 against 800.5),
-and a sweep of 32 packages found 20 that raised inside the sandbox and silently played
-random moves ([imitation/README.md](imitation/README.md), "Packaging"). So the project's
+and an offline sweep of 32 packages found 20 whose import would raise in the Kaggle
+extraction layout, so they would play random moves, and 9 more that imported with every card
+tag silently zero ([imitation/README.md](imitation/README.md), "Packaging"). So the project's
 real subject became *how to know a result is true*.
 
 ## Approach (methods and algorithms)
@@ -71,9 +72,11 @@ real subject became *how to know a result is true*.
 Methods are credited in [report/REFERENCES.md](report/REFERENCES.md) and
 [ppo/docs/RESEARCH.md](ppo/docs/RESEARCH.md).
 
-**Who did what.** This was a team entry; teammates are not named. By Oscar's account, he did the
-project's engineering, experiments and analysis himself. The folders recorded as team work
-(`imitation/`, `report/`) keep "all rights reserved" until the team agrees to a licence. The code
+**Who did what.** This was a team entry; teammates are not named. By Oscar's account, he did
+the project's engineering, experiments and analysis, with two recorded exceptions: a
+teammate's review of the serving path raised the missing-mask defect behind the false green
+above, and a teammate wrote the deck-scraping and deck-analysis code. The folders recorded
+as team work (`imitation/`, `report/`) keep "all rights reserved" until the team agrees to a licence. The code
 was implemented with AI coding agents under Oscar's design and review.
 
 ## Results (real numbers with their source; synthetic clearly labelled)
@@ -86,8 +89,8 @@ synthetic. Intervals are nominal Wilson 95%.
 
 | Result | Value | Source |
 |---|---|---|
-| **Final standing, `BEST1_fixed`** | **rank 2,043 of 6,807; score 709.1** | [final_standing.json](results/final_standing.json) |
-| Value head vs a zero-skill constant | value head Brier 0.5771; a class-frequency constant scores 0.487022 on 17,392 validation rows with no draws, so the head did worse than no skill **in aggregate** (the team had compared it with a 0.6667 three-class reference; a later head was useful late in games, see details) | [analysis_output.txt](results/analysis_output.txt), [details](docs/details.md#the-value-head) |
+| **Final standing, `BEST1_fixed`** | **rank 2,043 of 6,807 teams; score 709.1** (read 2026-09-13) | [final_standing.json](results/final_standing.json) |
+| Value head vs a zero-skill constant | value head Brier 0.5771 (an earlier run's head, `ss-tf-ptr-001`, not the submitted agent's); a class-frequency constant scores 0.487022 on 17,392 validation rows with no draws, so the head did worse than no skill **in aggregate** (same corpus split, not a paired evaluation; the team had compared it with a 0.6667 three-class reference; a later head was useful late in games, see details) | [analysis_output.txt](results/analysis_output.txt), [details](docs/details.md#the-value-head) |
 | ISMCTS, rejected | 111/400 = 27.75% [23.59, 32.33] vs same-deck baseline; 108/400 cross-deck | [analysis_output.txt](results/analysis_output.txt) |
 | PPO vs frozen parent (never submitted) | 0.8104 [0.756, 0.855] on 240 games; control, parent vs itself, 0.4875 [0.419, 0.556] on 200 | [ppo_RESULTS.md](results/ppo_RESULTS.md), [ppo_counts.py](figures/ppo_counts.py) |
 
@@ -114,8 +117,8 @@ bash scripts/check.sh    # no engine; observed about 1 s without torch, about 20
 [demo/model_demo.py](demo/model_demo.py): the NumPy serving forward scores SYNTHETIC boards
 beside torch, a badly built parity check reads a false PASS, and the correct one catches it. `check.sh` prints suites it
 cannot run as SKIPPED, never passed. [CI](.github/workflows/ci.yml) is configured to run both,
-installing numpy and CPU torch on the runner; it has not run yet (not pushed). Timings are
-single local observations.
+installing numpy and CPU torch on the runner; it ran on GitHub Actions and passed on `main`
+at commit 9c46a12 (2026-10-04). Timings are single local observations.
 
 A live match needs the official engine, licensed for competition use only and not included
 ([demo/README.md](demo/README.md); Python 3.10+):
@@ -135,13 +138,17 @@ demo/        live match on your engine; model demo on SYNTHETIC boards
 docs/        architecture paper, details.md;  engine/  GPU prototype: numbers, parity output
 ```
 
-The figure at the top shows the data flow: replays to tokens, training, NumPy export with
-stamped serving flags, then one script that builds and gates the package.
+The figure at the top is a schematic of historical branches, not one deployed agent: the
+play loop (observation, typed-token encoder, masked option scores, decoder contract, official
+engine), the learning path (demonstrations, whole-game split, behavioural cloning, weights,
+schema match, export and decoder checks), and the separate evidence gates for runtime and
+playing strength.
 
 ### Design decisions and trade-offs
 
 - **Imitation, with RL only as a fine-tune.** Imitation is bounded by its teachers (Spidops
-  copied a player who won 6.2% of games); the team's self-play loop had shown no learning gain.
+  copied a player who won 3 of 48 games, 6.2%); the team's self-play loop had not been tested
+  for a learning gain.
 - **NumPy at inference.** Torch was not guaranteed in the sandbox; the cost is two forwards
   that can drift, which the parity and serve-stamp gates police.
 - **No search shipped.** ISMCTS lost, Gumbel showed nothing, the value head scored worse
@@ -159,14 +166,16 @@ Sources: [docs/details.md](docs/details.md).
 A batched Rust/GPU simulator of a **simplified slice** of the game loop (setup, draw, energy,
 attacks with weakness and resistance, knock-outs, prizes, retreat, bench, three win conditions,
 legal-action mask, observation): **~110M environment steps/s on an Apple M2 Max** (Metal, batch
-262,144), about 4.4–4.7x the same slice on 12 CPU cores. Measured 110.14M originally and
-109.72M / 109.47M when re-run on 2026-10-03 ([raw output](engine/results/gpubench-2026-10-03.txt)).
-GPU output is checked against the prototype's own Rust CPU reference: 4,096 seeded games over
-48 steps, full state and legal masks identical after every step, observations within float
-tolerance; 3/3 parity tests pass ([output](engine/results/parity-2026-10-03.txt)). Not
-rule-complete, not parity-tested against the official engine, never used for training; the code
-is a derivative of the competition-use-only engine and stays private. Details and how it is
-reproduced: [engine/README.md](engine/README.md).
+262,144). Originally 110.14M, 4.8x the same slice on 12 CPU cores (22.82M); re-run on
+2026-10-03, 109.47M, 4.4x (24.69M) ([raw output](engine/results/gpubench-2026-10-03.txt)).
+One parity test compares GPU output with the prototype's own Rust CPU reference (4,096 seeded
+games over 48 steps, per [engine/README.md](engine/README.md)); a second runs the CUDA source
+as host C++ against the same reference, and a third checks the simulation progresses. All 3
+pass; the committed output shows test names only
+([output](engine/results/parity-2026-10-03.txt)). Not rule-complete, not parity-tested
+against the official engine, never used for training; the code is a derivative of the
+competition-use-only engine and stays private. Details and how it is reproduced:
+[engine/README.md](engine/README.md).
 
 ## Limits
 
@@ -177,8 +186,12 @@ reproduced: [engine/README.md](engine/README.md).
   numbers are records: their drivers and the 45M checkpoint are not included.
 - **Ladder scores drift**: one package scored 800.5 and 851.5 two days apart
   ([ppo/docs/BASELINE.md](ppo/docs/BASELINE.md)). Only the final standing is the result.
-- **Final submission.** An earlier checkpoint (`BEST1_fixed`) was the final submission; the
-  stronger `FIXED-312` (851.5 mid-competition) could not be swapped in before the deadline.
+- **Final submission.** `BEST1_fixed`, a Mega Lucario specialist with 269 numeric features
+  ([report/REPORT.md](report/REPORT.md) section 1), was the final submission. `FIXED-312`,
+  which scored 851.5 on the ladder mid-competition, is a different model that takes 160
+  numeric features ([ppo/docs/BASELINE.md](ppo/docs/BASELINE.md) section 1). No head-to-head
+  between them was recorded, and why `BEST1_fixed` was chosen is not in the records (by
+  Oscar's account, there was no time to resubmit `FIXED-312`).
 - **Pokemon names are third-party trademarks**; no artwork, card text or engine files.
 - **Licence, split by authorship.** The root MIT licence ([LICENSE](LICENSE)) covers Oscar's
   parts only: `ppo/`, `demo/`, `scripts/`, `figures/`, `.github/`, `engine/README.md` and this

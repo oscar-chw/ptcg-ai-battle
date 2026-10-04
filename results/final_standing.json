@@ -5,6 +5,9 @@
   "final_rank": "2043/6807",
   "rank": 2043,
   "ranked_out_of": 6807,
+  "ranked_out_of_unit": "teams on the Simulation leaderboard (team records count leaderboard entries as teams, e.g. 6,825 teams on 2026-08-15)",
+  "rank_read_on": "2026-09-13",
+  "rank_read_note": "Team records, 2026-09-13: leaderboard checked that day and the standing recorded as final. Whether the leaderboard moved after that date was not checked.",
   "effort": "the team",
   "strategy_report": {
     "competition": "Kaggle Pokemon TCG AI Battle Challenge, Strategy track",

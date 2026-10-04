@@ -22,10 +22,13 @@ cargo run --release --bin gpubench          # throughput sweep; prints the table
 cargo test --release --test parity          # GPU vs CPU reference: 4,096 games x 48 steps
 ```
 
-Re-run on 2026-10-03 on the same M2 Max: 109.72M and 109.47M env-steps/s at batch 262,144
-(110.14M originally recorded), and 3/3 parity tests passing
+Re-run on 2026-10-03 on the same M2 Max: 109.47M env-steps/s at batch 262,144, 4.4x the
+12-core CPU reference's 24.69M (110.14M and 4.8x originally recorded), and 3/3 parity tests
+passing: one compares GPU output with the CPU reference, one runs the CUDA source as host C++
+against it, and one checks the simulation progresses
 ([gpubench-2026-10-03.txt](results/gpubench-2026-10-03.txt),
-[parity-2026-10-03.txt](results/parity-2026-10-03.txt)).
+[parity-2026-10-03.txt](results/parity-2026-10-03.txt); the parity output lists test names
+only).
 
 ## What the slice is
 
