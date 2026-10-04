@@ -128,7 +128,7 @@ ppo/         STOP head, PPO objective, advantage, opponent pool; 115 tests; desi
 report/      the case study and analyze_results.py (standard library)
 results/     every number as a file;  figures/  the figure, PPO count recovery, tests
 demo/        live match on your engine; model demo on SYNTHETIC boards
-docs/        architecture paper, details.md;  engine/  GPU prototype notes, never used
+docs/        architecture paper, details.md;  engine/  GPU prototype: numbers, parity output
 ```
 
 The figure at the top shows the data flow: replays to tokens, training, NumPy export with
@@ -149,6 +149,20 @@ stamped serving flags, then one script that builds and gates the package.
   guards it ([imitation/README.md](imitation/README.md)).
 
 Sources: [docs/details.md](docs/details.md).
+
+### GPU prototype (simplified game loop)
+
+A batched Rust/GPU simulator of a **simplified slice** of the game loop (setup, draw, energy,
+attacks with weakness and resistance, knock-outs, prizes, retreat, bench, three win conditions,
+legal-action mask, observation): **~110M environment steps/s on an Apple M2 Max** (Metal, batch
+262,144), about 4.4–4.7x the same slice on 12 CPU cores. Measured 110.14M originally and
+109.72M / 109.47M when re-run on 2026-10-03 ([raw output](engine/results/gpubench-2026-10-03.txt)).
+GPU output is checked against the prototype's own Rust CPU reference: 4,096 seeded games over
+48 steps, full state and legal masks identical after every step, observations within float
+tolerance; 3/3 parity tests pass ([output](engine/results/parity-2026-10-03.txt)). Not
+rule-complete, not parity-tested against the official engine, never used for training; the code
+is a derivative of the competition-use-only engine and stays private. Details and how it is
+reproduced: [engine/README.md](engine/README.md).
 
 ## Limits
 

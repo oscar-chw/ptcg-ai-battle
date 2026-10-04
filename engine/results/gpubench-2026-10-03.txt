@@ -1,0 +1,63 @@
+=======================================================================
+ ptcg-gpu benchmark
+=======================================================================
+adapter                 : Apple M2 Max
+backend                 : Metal
+max_buffer_size         : 4294967295 B (4.00 GiB)
+max storage binding     : 4294967292 B
+max invocations/wg      : 1024
+max workgroups/dim      : 65535
+
+state bytes/game        : 4884 (compacted hot/cold SoA)
+total bytes/game        : 5156 (state + obs + reward + done + legal + action)
+dense equivalent        : 51188 (ptcg-core `State`, +I/O = 51460)
+compaction              : 9.98x
+
+--- workgroup size sweep (batch 65,536, 64 steps) ---
+   wg_size           dec/s         rel
+        32          79.21M       0.93x
+        64          85.57M       1.00x
+       128          84.63M       0.99x
+       256          85.51M       1.00x
+       512          84.65M       0.99x
+chosen workgroup size   : 64
+
+--- GPU throughput vs batch size (workgroup 64) ---
+     batch    steps      secs    env-steps/s       games/s        VRAM   shards
+      4096      512     0.202         10.36M         60.9k       0.02G        1
+     32768      512     0.296         56.77M        333.2k       0.17G        1
+    262144      256     0.613        109.47M        568.7k       1.35G        1
+   1048576      256     4.001         67.09M        349.0k       5.41G        2
+
+--- cost of a per-decision host round-trip (batch 65,536, 64 steps) ---
+actions chosen on device (PPO path)  :        86.24M env-steps/s
+obs+mask -> host -> actions (naive)  :        13.23M env-steps/s
+penalty of the host round-trip       :          6.5x
+
+--- CPU reference (same slice, same layout) ---
+    1 core ( 1 thr):         3.30M env-steps/s  (679 episodes in 0.04s)
+ all cores (12 thr):        24.69M env-steps/s  (8271 episodes in 0.06s)
+
+=======================================================================
+ COMPARISON (env-steps/sec = decisions/sec)
+=======================================================================
+engine                                          env-steps/s  vs py-1c
+Python + ctypes, 1 core (reported, Linux box)          14.0k      1.0x
+Python + ctypes, 128 workers (reported, Linux)         223.3k     16.0x
+this crate, Rust CPU reference, 1 core (M2 Max)          3.30M    235.5x
+this crate, Rust CPU + rayon, 12 cores (M2 Max)         24.69M   1763.7x
+this crate, Metal GPU, batch 262144 (M2 Max)        109.47M   7821.5x
+
+peak GPU env-steps/s    : 109.47M at batch 262144
+peak GPU games/s        : 568.7k
+GPU vs CPU (1 core)     : 33.2x
+GPU vs CPU (12 cores)    : 4.4x
+GPU vs py 128 workers   : 490.2x
+
+100x target (vs py 128w): 22.33M env-steps/s
+fraction of target on this M2 Max: 490.2%
+
+CUDA / RTX PRO 6000 Blackwell numbers: NOT MEASURED.
+  No NVIDIA GPU and no CUDA driver on this machine. See GPU_NOTES.md;
+  the CUDA kernel's game logic is verified here by compiling
+  kernels/ptcg_vm.cu as host C++ and running the same parity test.

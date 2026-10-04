@@ -10,7 +10,22 @@ for training.** No result elsewhere in this repository depends on it.
 competition use only (`LicenseRef-PTCG-ABC-Competition-Use-Only`), and a port is a
 derivative work of it, so the port stays local. Its notes (`crates/ptcg-gpu/GPU_NOTES.md`,
 `crates/ptcg-core/PORT_NOTES.md`) are not published either, so nothing below can be
-reproduced from this repository.
+reproduced from this repository alone. The raw output of the 2026-10-03 re-run is committed
+in [results/](results/).
+
+## Reproducing (with access to the private prototype)
+
+On an Apple-silicon Mac with the prototype checked out, from `crates/ptcg-gpu`:
+
+```bash
+cargo run --release --bin gpubench          # throughput sweep; prints the table below
+cargo test --release --test parity          # GPU vs CPU reference: 4,096 games x 48 steps
+```
+
+Re-run on 2026-10-03 on the same M2 Max: 109.72M and 109.47M env-steps/s at batch 262,144
+(110.14M originally recorded), and 3/3 parity tests passing
+([gpubench-2026-10-03.txt](results/gpubench-2026-10-03.txt),
+[parity-2026-10-03.txt](results/parity-2026-10-03.txt)).
 
 ## What the slice is
 
