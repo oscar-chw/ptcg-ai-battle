@@ -1,32 +1,25 @@
-# ptcg-ai-battle
+# Pokémon TCG AI Battle: imitation learning, self-play PPO and search
 
 [![ci](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/ci.yml/badge.svg)](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/ci.yml) [![lint](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/lint.yml/badge.svg)](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/lint.yml)
 
-A case study in verifying that a game-AI result is real: imitation learning, self-play PPO
-and search baselines for the Kaggle Pokemon TCG AI Battle.
+An agent for the Kaggle Pokémon TCG AI Battle, a two-player card game with hidden information.
+Built: a deck-specialist imitation agent (a set transformer over board tokens, served in
+hand-written NumPy), self-play PPO with a STOP head, ISMCTS and Gumbel search baselines, a batched
+Rust/GPU prototype of a simplified game loop at **~110M environment steps/s on an M2 Max**
+([GPU prototype](#gpu-prototype-simplified-game-loop); not rule-complete, code private), and a
+verification suite: four gates on the built package, a Wilson interval on every battery and PPO
+win rate, and a self-play control for the PPO rows.
 
 The team's submitted agent, `BEST1_fixed`, finished **rank 2,043 of 6,807 teams on the
-Simulation leaderboard, score 709.1**, no medal, as read on 2026-09-13 and recorded as
-final; later movement was not checked ([results/final_standing.json](results/final_standing.json)).
-The team's write-up was submitted to the Kaggle strategy track
+Simulation leaderboard, score 709.1**, as read on 2026-09-13 and recorded as final; later
+movement was not checked ([results/final_standing.json](results/final_standing.json)). The
+team's write-up was submitted to the Kaggle strategy track
 ([write-up](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle-challenge-strategy/writeups/from-imitation-to-reliable-play-a-ptcg-agent-stud)).
 
-**A parity check built the wrong way read green while two submissions scored 256.7 and
-183.1 against the team's 800.5 champion.** A teammate's review of the serving path raised
-the missing masks. The serving forward attended over padding the weights were trained to
-mask, and the check collated its torch reference the same wrong way, so both sides agreed ([gate_compute_parity.py](imitation/gates/gate_compute_parity.py),
-docstring). How much of the gap that defect caused is the team's diagnosis, not a
-measurement: the 800.5 champion was itself served without masks or relations, with
-recorded served-vs-trained agreement 0.8736 against 0.8200 for the two failed arms (team
-records, private). What is certain is that the defect existed and the check could not see
-it; [demo/model_demo.py](demo/model_demo.py) reproduces that false green on a SYNTHETIC
-model, next to the corrected check catching it. The repository is about catching
-failures like that before they ship: four gates check the built package, every battery
-and PPO win rate carries a Wilson interval, and the PPO rows a self-play control.
-
-Also prototyped: a batched Rust/GPU simulator of a simplified game loop, **~110M environment
-steps/s on an M2 Max**, its GPU output checked step by step against a CPU reference
-([GPU prototype](#gpu-prototype-simplified-game-loop); not rule-complete, code private).
+**What it taught:** a check can pass while the deployed agent is broken. A teammate's review of
+the serving path found a masking defect that the team's parity check could not see;
+[demo/model_demo.py](demo/model_demo.py) reproduces that false green on a SYNTHETIC model, next
+to the corrected check catching it ([The problem](#the-problem)).
 
 ```bash
 bash scripts/demo.sh    # standard-library python3, no engine: results table, headline, PPO game counts
@@ -36,9 +29,8 @@ PTCG_PYTHON=/path/to/python-with-numpy-torch-pytest bash scripts/demo.sh   # add
 
 ![Policy architecture and evaluation boundaries](report/architecture.svg)
 
-Implemented with AI coding agents under Oscar's design and review: the consolidation,
-tests, demo and write-ups here; the competition work itself is the team's. The licence is
-split by authorship, and no engine code or data is included ([Limits](#limits)).
+The competition work is the team's; the licence is split by authorship, and no engine code or
+data is included ([Limits](#limits)). Implemented with AI coding agents under Oscar's design and review.
 
 ## The problem
 
@@ -48,8 +40,17 @@ official simulator supplies each observation and its legal options. A submission
 package (`main.py`, a deck, weights) run in a sandbox where a deep-learning framework is
 not guaranteed, and it is ranked on a ladder of simulated games.
 
-The hard part was knowing what was deployed. Besides the false-green parity check above, a
-second build path re-shipped a fixed defect 19 hours later (260.9 and 156.9 against 800.5),
+The hard part was knowing what was deployed. **A parity check built the wrong way read green
+while two submissions scored 256.7 and 183.1 against the team's 800.5 champion.** A teammate's
+review of the serving path raised the missing masks. The serving forward attended over padding
+the weights were trained to mask, and the check collated its torch reference the same wrong way,
+so both sides agreed ([gate_compute_parity.py](imitation/gates/gate_compute_parity.py),
+docstring). How much of the gap that defect caused is the team's diagnosis, not a measurement:
+the 800.5 champion was itself served without masks or relations, with recorded served-vs-trained
+agreement 0.8736 against 0.8200 for the two failed arms (team records, private). What is certain
+is that the defect existed and the check could not see it.
+
+Besides that false green, a second build path re-shipped a fixed defect 19 hours later (260.9 and 156.9 against 800.5),
 and an offline sweep of 32 packages found 20 whose import would raise in the Kaggle
 extraction layout, so they would play random moves, and 9 more that imported with every card
 tag silently zero ([imitation/README.md](imitation/README.md), "Packaging"). So the project's
@@ -77,9 +78,9 @@ Methods are credited in [report/REFERENCES.md](report/REFERENCES.md) and
 **Who did what.** This was a team entry; teammates are not named. By Oscar's account, he did
 the project's engineering, experiments and analysis, with two recorded exceptions: a
 teammate's review of the serving path raised the missing-mask defect behind the false green
-above, and a teammate wrote the deck-scraping and deck-analysis code. The folders recorded
-as team work (`imitation/`, `report/`) keep "all rights reserved" until the team agrees to a licence. The code
-was implemented with AI coding agents under Oscar's design and review.
+(see [The problem](#the-problem)), and a teammate wrote the deck-scraping and deck-analysis code. The folders recorded
+as team work (`imitation/`, `report/`) keep "all rights reserved" until the team agrees to a licence. AI coding
+agents implemented this repository's consolidation, tests, demo and write-ups.
 
 ## Results (real numbers with their source; synthetic clearly labelled)
 
@@ -194,7 +195,7 @@ competition-use-only engine and stays private. Details and how it is reproduced:
   numeric features ([ppo/docs/BASELINE.md](ppo/docs/BASELINE.md) section 1). No head-to-head
   between them was recorded, and why `BEST1_fixed` was chosen is not in the records (by
   Oscar's account, there was no time to resubmit `FIXED-312`).
-- **Pokemon names are third-party trademarks**; no artwork, card text or engine files.
+- **Pokémon names are third-party trademarks**; no artwork, card text or engine files.
 - **Licence, split by authorship.** The root MIT licence ([LICENSE](LICENSE)) covers Oscar's
   parts only: `ppo/`, `demo/`, `scripts/`, `figures/`, `.github/`, `engine/README.md` and this
   README. `imitation/` and `report/` are the team's and carry their own all-rights-reserved

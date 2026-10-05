@@ -34,5 +34,5 @@ development branches; their results are not the final agent's win rates. The cas
 claims no medal and no demonstrated state-of-the-art policy.
 
 Reproduce the statistics with `python3 report/analyze_results.py` from the repository
-root. Pokemon and associated names are third-party trademarks. This is an independent
+root. Pokémon and associated names are third-party trademarks. This is an independent
 participant report; it contains no official artwork or redistributed simulator assets.

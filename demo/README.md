@@ -18,7 +18,7 @@ The official engine is licensed for competition use only
 (`LicenseRef-PTCG-ABC-Competition-Use-Only`), so this repository cannot ship it and the demo
 loads it from a directory you supply.
 
-1. Join the Pokemon TCG AI Battle competition on Kaggle and accept its rules.
+1. Join the Pokémon TCG AI Battle competition on Kaggle and accept its rules.
 2. Download the competition data from the **Data** tab (or
    `kaggle competitions download -c pokemon-tcg-ai-battle`) and unzip it.
 3. Find the folder that contains `cg/`, `deck.csv` and `main.py`. In the unzipped data it is
