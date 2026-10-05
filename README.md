@@ -1,6 +1,6 @@
 # Pokémon TCG AI Battle: imitation learning, self-play PPO and search
 
-[![ci](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/ci.yml/badge.svg)](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/ci.yml) [![lint](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/lint.yml/badge.svg)](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/lint.yml)
+[![ci](https://github.com/oscar-chw/ptcg-ai-battle/actions/workflows/ci.yml/badge.svg)](https://github.com/oscar-chw/ptcg-ai-battle/actions/workflows/ci.yml) [![lint](https://github.com/oscar-chw/ptcg-ai-battle/actions/workflows/lint.yml/badge.svg)](https://github.com/oscar-chw/ptcg-ai-battle/actions/workflows/lint.yml)
 
 An agent for the Kaggle Pokémon TCG AI Battle, a two-player card game with hidden information.
 Built: a deck-specialist imitation agent (a set transformer over board tokens, served in
