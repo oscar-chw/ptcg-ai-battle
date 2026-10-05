@@ -89,3 +89,50 @@ compares the port's rules with the official engine's.
 - **Device-resident loop**: observation, reward, done flag and legal-action mask are written
   into device memory, so a learner could read them without a host round trip (6.2x faster
   than copying them each step: 86.08M against 13.91M env-steps/s at batch 65,536).
+
+The three backends, the device-resident loop and the parity tests, as the notes above
+describe them (the code itself is private):
+
+```mermaid
+flowchart TB
+  subgraph PRIV["Private prototype: code not published"]
+    LAY["one generated<br/>layout prelude"]
+    CPU["Rust CPU reference,<br/>the port's ground truth"]
+    GPU["WGSL shader via wgpu,<br/>one lane per game"]
+    CUDA["CUDA kernel source,<br/>throughput unmeasured"]
+    DEV[("device memory: obs,<br/>reward, done, legal mask")]
+  end
+  subgraph TESTS["Parity tests: 3 of 3 pass, 2026-10-03"]
+    P1{{"GPU vs CPU:<br/>4,096 games × 48 steps"}}
+    P2{{"CUDA as host C++<br/>vs CPU"}}
+    P3{{"simulation progresses"}}
+  end
+  ENG[("official engine")]
+  OUT["~110M env-steps/s,<br/>simplified slice only,<br/>never used for training"]
+  ENG -.->|"ported, slice only;<br/>never parity-tested"| PRIV
+  LAY -->|"same layout"| CPU
+  LAY -->|"same layout"| GPU
+  LAY -->|"same layout"| CUDA
+  GPU ==>|"writes every step,<br/>no host round trip"| DEV
+  DEV ==>|"batch 262,144"| OUT
+  GPU -->|"state, mask, done, reward exact;<br/>obs within 1e-6"| P1
+  CPU -->|"reference output"| P1
+  CUDA -->|"compiled as host C++"| P2
+  CPU -->|"reference output"| P2
+
+  classDef data fill:#dbeafe,stroke:#1d4ed8,color:#0b1220
+  classDef step fill:#f1f5f9,stroke:#475569,color:#0b1220
+  classDef gate fill:#fef3c7,stroke:#b45309,color:#0b1220
+  classDef out  fill:#dcfce7,stroke:#15803d,color:#0b1220
+  classDef ext  fill:#f8fafc,stroke:#94a3b8,color:#0b1220,stroke-dasharray:4 3
+  classDef key  fill:#ede9fe,stroke:#6d28d9,color:#0b1220,stroke-width:2px
+  class LAY,CPU,CUDA step
+  class GPU key
+  class DEV data
+  class P1,P2,P3 gate
+  class OUT out
+  class ENG ext
+```
+
+Where in the code: not published (`crates/ptcg-gpu` in the private prototype); the records
+are this file and [results/](results/).

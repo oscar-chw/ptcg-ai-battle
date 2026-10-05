@@ -10,3 +10,5 @@
 - [details.md](details.md): the full results table, the negative results, the
   serving-package scores whose cause was not recorded, and the long form of the README's
   design decisions, each with its source.
+- [DIAGRAMS.md](DIAGRAMS.md): the numbered diagrams (overview, the false-green parity check,
+  training to serving, the GPU prototype), each with the files it draws.
