@@ -175,7 +175,7 @@ def load_aux_table(path):
     """episode+optional seat+step -> label vector, or None if not supplied.
 
     A path that was SUPPLIED but does not exist is a hard error, not a None.
-    Treating the two the same cost a full-corpus 4-GPU run: it was launched with
+    Treating the two the same cost a full-corpus multi-GPU run: it was launched with
     --lookahead artifacts/lookahead_marnie-ALL.jsonl.gz, which had never been
     built, so aux_table came back None, the 12 look-ahead heads silently
     vanished, --aux-weight 0.30 weighted nothing, and the arm trained the pure
