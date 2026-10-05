@@ -7,3 +7,4 @@ __pycache__/
 imitation/build/
 imitation/runs/
 imitation/.gate/
+.ruff_cache/

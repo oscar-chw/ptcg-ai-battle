@@ -2,7 +2,6 @@
 import unittest
 
 import numpy as np
-import torch
 
 import synthetic as syn
 import model_ss

@@ -5,6 +5,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   stdlib:
     # scripts/check.sh with the standard library only: the report, imitation, figures and

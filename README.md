@@ -1,5 +1,7 @@
 # ptcg-ai-battle
 
+[![ci](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/ci.yml/badge.svg)](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/ci.yml) [![lint](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/lint.yml/badge.svg)](https://github.com/hihihhi/ptcg-ai-battle/actions/workflows/lint.yml)
+
 A case study in verifying that a game-AI result is real: imitation learning, self-play PPO
 and search baselines for the Kaggle Pokemon TCG AI Battle.
 
