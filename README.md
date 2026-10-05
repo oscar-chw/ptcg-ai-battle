@@ -120,8 +120,7 @@ bash scripts/check.sh    # no engine; observed about 1 s without torch, about 20
 [demo/model_demo.py](demo/model_demo.py): the NumPy serving forward scores SYNTHETIC boards
 beside torch, a badly built parity check reads a false PASS, and the correct one catches it. `check.sh` prints suites it
 cannot run as SKIPPED, never passed. [CI](.github/workflows/ci.yml) is configured to run both,
-installing numpy and CPU torch on the runner; it ran on GitHub Actions and passed on `main`
-at commit 9c46a12 (2026-10-04). Timings are single local observations.
+installing numpy and CPU torch on the runner; its current status is the CI badge at the top of this README. Timings are single local observations.
 
 A live match needs the official engine, licensed for competition use only and not included
 ([demo/README.md](demo/README.md); Python 3.10+):
