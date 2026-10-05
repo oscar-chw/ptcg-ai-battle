@@ -2,7 +2,7 @@
 
 Each diagram draws a mechanism this repository documents; every node is a file, function or
 documented step, and every number is sourced in the README or the file named under it. The
-README embeds diagrams 1 to 3.
+README embeds diagrams 1 and 2.
 
 *If a diagram and the code disagree, the code wins.*
 

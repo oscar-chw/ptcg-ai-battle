@@ -1,6 +1,6 @@
-# Details behind the README
+# Full results, negative results and design decisions
 
-The README keeps four headline rows. This file holds the full results table, the
+The README keeps a compact results table. This file holds the full results table, the
 negative results, the serving-package scores whose cause was not recorded, and the
 long form of the design decisions. Every number cites its source. None is synthetic.
 
@@ -27,6 +27,11 @@ row are not on the same scale.
 | PPO vs an opponent never trained against | 0.7167 [0.663, 0.765] for PPO, 0.5333 [0.409, 0.654] for the champion (the intervals allow 32/60 for the champion; the PPO count is ambiguous, 210/293 or 215/300) | [ppo_RESULTS.md](../results/ppo_RESULTS.md), gate 3 |
 | GPU prototype, M2 Max, Metal | 110.14M env-steps/s at batch 262,144 for a batched Rust/GPU prototype of a simplified game-loop slice, verified against its own CPU reference; not rule-complete, not parity-tested against the official engine, never used for training, not published | [engine/README.md](../engine/README.md) |
 | This repository's tests | 115 ppo (pytest), 33 imitation numeric, 19 imitation stdlib, 12 demo, 5 report, 6 figures (unittest) | `bash scripts/check.sh` |
+
+PPO counts: the game counts were not recorded; 194.5/240 and 97.5/200 are the only ones the
+intervals allow (`python3 figures/ppo_counts.py`), and the half-points mean draws scored 0.5
+there, not 0 as in the battery rows. The champion's row against the never-trained opponent
+rests on only about 60 games; why the two samples differ in size is not recorded.
 
 ## Negative results
 
