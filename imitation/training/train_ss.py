@@ -1090,6 +1090,16 @@ def split_decay_params(model):
     return decay, no_decay
 
 
+def uncompiled(model):
+    """The module underneath a torch.compile wrapper, or `model` itself.
+
+    The wrapper prefixes every state_dict key with "_orig_mod.", which the loaders
+    (policy.architecture_from_state_dict, main_v7._arch) cannot read. Parameters are shared,
+    so saving and loading through the inner module is the same weights under the real names.
+    """
+    return getattr(model, "_orig_mod", model)
+
+
 def apply_init_from_then_num_stats(model, args, device):
     """--init-from FIRST, --num-stats SECOND, then VERIFY the file won.
 
@@ -1118,7 +1128,7 @@ def apply_init_from_then_num_stats(model, args, device):
         # the SAME architecture it throws away 12 trained look-ahead heads and
         # restarts them from noise, which spikes the aux term and drags the
         # trunk with it -- the opposite of continuing a run.
-        want = model.state_dict()
+        want = uncompiled(model).state_dict()
         dropped = [k for k in sd
                    if k.startswith("aux.")
                    and (k not in want or want[k].shape != sd[k].shape)]
@@ -1126,7 +1136,7 @@ def apply_init_from_then_num_stats(model, args, device):
         if dropped:
             print(f"dropped {len(dropped)} aux tensors on shape mismatch",
                   flush=True)
-        missing, unexpected = model.load_state_dict(sd, strict=False)
+        missing, unexpected = uncompiled(model).load_state_dict(sd, strict=False)
         bad = [k for k in list(missing) + list(unexpected)
                if not k.startswith("aux.")]
         if bad:
@@ -1916,7 +1926,7 @@ def main() -> None:
                     and step % args.ckpt_every_steps == 0):
                 rec.save_checkpoint(
                     step, lambda p: torch.save(
-                        (model.module if is_ddp else model).state_dict(), p))
+                        uncompiled(model.module if is_ddp else model).state_dict(), p))
         # Reported once per epoch, and fatal on a total miss. Without this the
         # per-batch counts would be computed and thrown away, which is the same
         # silence F-7 was about, just one level up.
@@ -1982,7 +1992,7 @@ def main() -> None:
             else:
                 stale += 1
             if improved or periodic:
-                rec.save_checkpoint(step, lambda p: torch.save(core.state_dict(), p))
+                rec.save_checkpoint(step, lambda p: torch.save(uncompiled(core).state_dict(), p))
             print(f"epoch {epoch:4d} step {step:6d} loss {run_loss/steps_per_epoch:.4f} "
                   f"tr1 {ep_hits/max(ep_seen,1):.4f} gap {(ep_hits/max(ep_seen,1))-metrics['top1']:+.4f} "
                   f"top1 {metrics['top1']:.4f} end_p {metrics['end_precision']:.3f} "
