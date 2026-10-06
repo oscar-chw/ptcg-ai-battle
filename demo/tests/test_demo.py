@@ -76,6 +76,15 @@ class Agents(unittest.TestCase):
                 self.assertEqual(len(set(picked)), len(picked))
                 self.assertTrue(all(0 <= i < n for i in picked))
 
+    def test_random_agent_clips_max_count_to_the_option_count(self):
+        agent = RandomAgent(seed=0)
+        obs = {"select": {"minCount": 1, "maxCount": 3,
+                          "option": [option(OptionType.PLAY)] * 2}}
+        for _ in range(200):
+            picked = agent.act(obs)
+            self.assertTrue(1 <= len(picked) <= 2)
+            self.assertEqual(sorted(set(picked)), sorted(picked))
+
 
 class Duel:
     """First player to land 3 hits wins. `hits_to_win=None` makes a game that never ends."""

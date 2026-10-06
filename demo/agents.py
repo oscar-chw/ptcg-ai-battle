@@ -20,7 +20,9 @@ class RandomAgent:
     def act(self, obs: dict) -> list[int]:
         select = obs["select"]
         n = len(select["option"])
-        count = self.rng.randint(select["minCount"], select["maxCount"])
+        # The engine can state a maxCount above the number of options (a (1, 3) prompt
+        # offering 2); sampling more than n would raise, so clip as the serving agent does.
+        count = self.rng.randint(min(select["minCount"], n), min(select["maxCount"], n))
         return self.rng.sample(range(n), count)
 
 
