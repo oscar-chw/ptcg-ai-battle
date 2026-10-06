@@ -1211,8 +1211,8 @@ def attack_features(attack_id: int, attacker: dict | None) -> list[float]:
     colorless = int(EnergyType.COLORLESS)
     need = sum(cost)
     generic = cost[colorless]
-    typed_ok = all(have[i] >= cost[i] for i in range(N_ENERGY) if i != colorless)
-    affordable = typed_ok and sum(have) >= need
+    # RAINBOW and TEAM_ROCKET energy pay typed costs; only energy_payment knows that.
+    affordable = energy_payment(have, cost)[0] == 0
     damage = 0
     if atk:
         try:
