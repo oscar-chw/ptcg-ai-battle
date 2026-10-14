@@ -8,3 +8,5 @@ imitation/build/
 imitation/runs/
 imitation/.gate/
 .ruff_cache/
+# Local raw verification output; portable excerpts and hashes are tracked in docs/ and plan/.
+.local/

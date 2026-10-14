@@ -1,0 +1,30 @@
+{
+  "control": "PASS; valid record admitted before and after mutation contexts",
+  "mutations": {
+    "boolean-as-integer": {
+      "killed": true,
+      "failures": 3,
+      "errors": 0
+    },
+    "out-of-range-admitted": {
+      "killed": true,
+      "failures": 2,
+      "errors": 0
+    },
+    "mutable-menu": {
+      "killed": true,
+      "failures": 1,
+      "errors": 0
+    },
+    "duplicate-json-key": {
+      "killed": true,
+      "witness": "same valid schema repeated: correct parser rejects duplicate; broken parser admits the record",
+      "positive_control": "nonduplicate record admitted after restoring source"
+    },
+    "nonstandard-json": {
+      "killed": true,
+      "witness": "NaN input incorrectly admitted by broken parser"
+    }
+  },
+  "scope": "in-memory source mutations; canonical files and acceptance unchanged"
+}

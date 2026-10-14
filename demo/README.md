@@ -60,6 +60,14 @@ check FAILs the wrong serving mode and PASSes the trained one. It exits 1 if any
 out otherwise. No real weights or engine data are involved, so it says
 nothing about playing strength.
 
+## Inspect decision menus without the engine
+
+`python3 demo/audit_trace.py demo/examples/decision-menu.synthetic.jsonl` checks three original
+SYNTHETIC selection menus and reports decisions/passes by agent. Invalid input reports file/line,
+returns1 and prints no success summary. The match loop uses the same validator before dispatch;
+`--trace decisions.jsonl` captures minimal menus into a new file. See [the example and contract](../docs/decision-audit.md).
+This checks menu consistency, not card rules, a trained model or playing strength.
+
 ## Tests
 
 `python3 -m unittest discover -s demo/tests` needs no engine: the match loop and both agents

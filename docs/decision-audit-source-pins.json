@@ -1,0 +1,37 @@
+{
+  "implementation_commit": "29af384e88fee1b9f1d679d268f09c533ac1ef05",
+  "base": "45f2703",
+  "code_sha256": {
+    "demo/audit_trace.py": "84eaac72de59e3ec94e950067fb648f7d7cc5652b8352c86d3d901879dfa0d39",
+    "demo/decision_audit.py": "54fdf3670386dd0d1baed30e8e98880331ac4635350e53fb812252378cfbb5a8",
+    "demo/run_match.py": "d7a121bcc1681f4db4bc5d42aeada6c5c0cb7f524db23519bf9c05ade4e18eac",
+    "demo/tests/test_decision_audit.py": "5c2a9c795c044c8558e4ec46249cf6b874fbe2232e03f785b89f5450d33df633"
+  },
+  "original23acceptancefiles_unchanged": true,
+  "protected_acceptance_sha256": {
+    ".github/workflows/ci.yml": "561f2a1da06edfbdc34ca0ad5121bf490c0a81da52a431d786c47f61919ba328",
+    ".github/workflows/lint.yml": "0cbdc9bd37637e08911a82aa23e6d1fb6a4c8949c91a74bd127c54d86e407266",
+    "demo/tests/test_demo.py": "26c68167a8417e2e21b885582cca1f19d51639b58573220d303f782cf3ea15b9",
+    "figures/tests/test_figure_data.py": "04226a9fcb17a45aedb92c391e7414ef6d4a45aa09fb64cad75b97127e1da077",
+    "imitation/tests/test_attack_affordable.py": "1817640c4e7c164624a20fa9667b9983d926bfc3185cdd15fbb70e309b48cefb",
+    "imitation/tests/test_deck_tracker.py": "3e1f8bdb254f476da069a3854d4bbc481b3132a728c3552833f8c21a417925f0",
+    "imitation/tests/test_no_engine_data.py": "020cb23801f529dbf37ff5a91ebc31edf434563096ccbbf0d5afeffdb66ac8cf",
+    "imitation/tests/test_serve_flags.py": "706fb0e48cd258731409a0e0df11f8b979432f3ff8f4c5e04bd66a43262b9764",
+    "imitation/tests/test_strict_get.py": "69caeece0628d46b2f9248a6565dbdb9947ec448dae21f315a877f95075fba72",
+    "imitation/tests_torch/synthetic.py": "e96d15d9dda727de516be9a67238cc8249e6620d10146cb1f876d181e487273b",
+    "imitation/tests_torch/test_export_and_gates.py": "228304e644a87c468c672b609ea8e3f9f85f99085e6abda410c0eabd1ce8ba0f",
+    "imitation/tests_torch/test_fallback.py": "b9f3d36ecb0d6749839d9f6f218356f18efa0da9672f2bc419c335e8d22a817c",
+    "imitation/tests_torch/test_model_ss.py": "bbf6c7da531eefa66c7dccbc8e5f86980c7db50ee7608046dc0e653877fc31f5",
+    "imitation/tests_torch/test_numpy_parity.py": "2e5a201c2392e73a61b3094c1d9cde4af2b19ad68b9fe908fb8c760169dc92a7",
+    "imitation/tests_torch/test_packaging.py": "2f86160b7ea64be1569aeb9f2b8027cfe086e4b0588a6c22bad267bd59674624",
+    "ppo/tests/test_action.py": "b5219aeeb47e772bb5cfbc9961ea304598c32af0e062870840d7956bdc08f704",
+    "ppo/tests/test_advantage.py": "dfde318655d74df9e7046c20f6b0e93f246356e2fe4c6ceff5d0a8920048c963",
+    "ppo/tests/test_collate.py": "ce49e0ef69b6beb5b63b43f1e7817d140894bde9d717d775cef5ab0856c550d6",
+    "ppo/tests/test_objective.py": "fb40aeb113fa35c44f8619568bffa801e135f3a841c6f325170cb562caaf2a33",
+    "ppo/tests/test_policy.py": "ab48e2e7eda49df3a589c2b7c120bac38b14db9382a886fca2b7772561bd4b16",
+    "ppo/tests/test_pool.py": "7d3a5714040ac8884bc907f87f8355bf206b1a7464a17f2a86b0fc9b6f3e0f26",
+    "report/tests/test_analyze_results.py": "7e3a8d354be061685e814e152477e342ac4b739fdd56597a6a48829c4b138218",
+    "scripts/check.sh": "224ad4f782097e4461eaf46006360f1ca91c7095c4900af3de443d2cb97a421e"
+  },
+  "scope": "locally checked component; final full gate PASS, real engine/model/training NOT_RUN, independent acceptance/publication held"
+}

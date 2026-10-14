@@ -1,0 +1,2 @@
+{"schema":"ptcg-decision/v1","game":0,"step":0,"agent":"fixture_a","observation":{"current":{"result":-1,"yourIndex":0},"select":{"type":9,"minCount":1,"maxCount":1,"option":[{"type":1},{"type":2}]}},"selected":[1]}
+{"schema":"ptcg-decision/v1","game":0,"step":1,"agent":"fixture_b","observation":{"current":{"result":-1,"yourIndex":1},"select":{"type":9,"minCount":0,"maxCount":3,"option":[{"type":1},{"type":2}]}},"selected":[0,0]}

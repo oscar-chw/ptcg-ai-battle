@@ -1,0 +1,95 @@
+{
+  "content_free_features": {
+    "risk": "normal",
+    "criteria_status": "complete",
+    "authority": "sufficient",
+    "recovery_status": "tested",
+    "work_kind": "mixed",
+    "complexity": "moderate",
+    "uncertainty": "medium",
+    "independent_units": 1,
+    "dependency_depth": 1,
+    "write_relationship": "none",
+    "tool_density": "medium",
+    "oracle_strength": "strong",
+    "reversible": true,
+    "external_context": false,
+    "domain_judgment": true,
+    "repetitive": false,
+    "persistent_change": false,
+    "requested_verification": true,
+    "classification_confidence": 0.95
+  },
+  "exit_code": 0,
+  "output": {
+    "budgets": {
+      "class": "expanded",
+      "max_depth": 1,
+      "max_retries": 1,
+      "max_revision_rounds": 1,
+      "max_threads": 4,
+      "max_workers": 2
+    },
+    "decision_id": "route_1a73ad4e9f8ded15",
+    "difficulty_score": 8,
+    "dispatch_allowed": false,
+    "effective_risk": "normal",
+    "policy_stage": "candidate",
+    "policy_version": "1.0.0",
+    "reason_codes": [
+      "candidate_shadow_only",
+      "selected_high_tier",
+      "independent_verification_required"
+    ],
+    "root": {
+      "agent_type": "root",
+      "compute_tier": "root",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "ultra",
+      "sandbox": {
+        "effective_mode": null,
+        "enforcement_status": "UNVERIFIED",
+        "requested_mode": "workspace-write"
+      },
+      "user_facing": true
+    },
+    "schema": "codex-house/route-decision/v1",
+    "status": "SHADOW",
+    "telemetry": {
+      "content_logging": false,
+      "external_context": false
+    },
+    "tier_registry_version": "1.0.0",
+    "topology": "builder_verifier",
+    "verifier": {
+      "agent_type": "independent_verifier",
+      "compute_tier": "verifier",
+      "dispatch_allowed": false,
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "required": true,
+      "sandbox": {
+        "effective_mode": null,
+        "enforcement_status": "UNVERIFIED",
+        "requested_mode": "read-only"
+      },
+      "user_facing": false
+    },
+    "workers": [
+      {
+        "agent_type": "specialist_high",
+        "compute_tier": "high",
+        "count": 1,
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "sandbox": {
+          "effective_mode": null,
+          "enforcement_status": "UNVERIFIED",
+          "requested_mode": "workspace-write"
+        },
+        "user_facing": false
+      }
+    ]
+  },
+  "scope": "routing evidence only; does not establish an active profile or runtime boundary"
+}

@@ -15,11 +15,13 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import json
 import os
 import sys
 import time
 from pathlib import Path
 from types import SimpleNamespace
+from typing import TextIO
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -27,6 +29,7 @@ sys.path.insert(0, str(HERE.parent / "report"))
 
 from agents import GreedyAgent, RandomAgent  # noqa: E402
 from analyze_results import wilson  # noqa: E402
+from decision_audit import decision_record, read_result, selection_menu, validate_decision  # noqa: E402
 
 NO_ENGINE = """\
 PTCG_ENGINE_DIR is not set, so there is no engine to play on.
@@ -69,24 +72,33 @@ def read_deck(directory: Path) -> list[int]:
     return deck
 
 
-def play_game(game, deck: list[int], agents: list) -> int | None:
+def play_game(game, deck: list[int], agents: list, *, trace: TextIO | None = None,
+              game_id: int = 0) -> int | None:
     """Play one game; return the winning seat, or None for a draw or a timeout."""
-    obs, start = game.battle_start(deck, deck)
-    if obs is None:
-        raise RuntimeError(f"the engine refused the deck (player {start.errorPlayer}, "
-                           f"error {start.errorType})")
     try:
-        for _ in range(MAX_STEPS):
-            result = obs["current"]["result"]
+        obs, start = game.battle_start(deck, deck)
+        if obs is None:
+            raise RuntimeError(f"the engine refused the deck (player {start.errorPlayer}, "
+                               f"error {start.errorType})")
+        for step in range(MAX_STEPS):
+            result = read_result(obs)
             if result != -1:
                 return result if result in (0, 1) else None
-            obs = game.battle_select(agents[obs["current"]["yourIndex"]].act(obs))
+            # Freeze the issued menu before agent code can change the observation it receives.
+            menu = selection_menu(obs)
+            agent = agents[menu["current"]["yourIndex"]]
+            selected = agent.act(obs)
+            validate_decision(menu, selected)
+            if trace is not None:
+                entry = decision_record(menu, selected, agent.name, game_id, step)
+                trace.write(json.dumps(entry, sort_keys=True) + "\n")
+            obs = game.battle_select(selected)
         return None
     finally:
         game.battle_finish()
 
 
-def run(engine, deck: list[int], games: int, seed: int) -> dict:
+def run(engine, deck: list[int], games: int, seed: int, *, trace: TextIO | None = None) -> dict:
     """Alternate which agent sits first, so neither side owns the first-turn advantage."""
     damage = {a.attackId: a.damage for a in engine.api.all_attack()}
     wins = {"greedy": 0, "random": 0}
@@ -96,7 +108,8 @@ def run(engine, deck: list[int], games: int, seed: int) -> dict:
         agents = [greedy, RandomAgent(seed * 1_000_003 + i)]
         if i % 2:
             agents.reverse()
-        winner = play_game(engine.game, deck, agents)
+        winner = play_game(engine.game, deck, agents) if trace is None else play_game(
+            engine.game, deck, agents, trace=trace, game_id=i)
         if winner is None:
             undecided += 1
         else:
@@ -121,6 +134,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--games", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=0, help="seeds the random agent only")
+    parser.add_argument("--trace", type=Path, help="write new decision-menu JSONL; refuses existing files")
     args = parser.parse_args(argv)
 
     directory = os.environ.get("PTCG_ENGINE_DIR")
@@ -137,7 +151,14 @@ def main(argv: list[str] | None = None) -> int:
         return fail(str(err))
 
     started = time.time()
-    summary = run(engine, deck, args.games, args.seed)
+    if args.trace is None:
+        summary = run(engine, deck, args.games, args.seed)
+    else:
+        try:
+            with args.trace.open("x", encoding="utf-8") as trace:
+                summary = run(engine, deck, args.games, args.seed, trace=trace)
+        except (OSError, ValueError) as error:
+            return fail(f"trace/match failed: {error}")
     print(report(summary, time.time() - started))
     return 0
 

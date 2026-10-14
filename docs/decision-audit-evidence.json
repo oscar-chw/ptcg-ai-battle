@@ -1,0 +1,56 @@
+{
+  "base": "45f2703",
+  "acceptance_first": {
+    "command": "python3 -m unittest discover -s demo/tests -p test_decision_audit.py",
+    "exit_code": 1,
+    "tests": 9,
+    "failures": 28,
+    "errors": 3
+  },
+  "review_repairs_red": {
+    "command": "python3 -m unittest discover -s demo/tests -p test_decision_audit.py",
+    "exit_code": 1,
+    "tests": 14,
+    "failures": 3,
+    "errors": 0
+  },
+  "focused_final": {
+    "command": "plan gate decision-audit 7",
+    "exit_code": 0,
+    "tests": 27
+  },
+  "first_full_gate": {
+    "command": "PTCG_PYTHON=<approved CPU environment> env -u PTCG_ENGINE_DIR plan gate decision-audit 6",
+    "exit_code": 0,
+    "seconds": 67,
+    "groups_ran": 10,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "before the two reviewed repairs; not final-source full acceptance",
+    "raw_record_sha256": "57fba8264aba61716a60465a871929a4b18bc5a886092ece20eb557097d4f369",
+    "public_excerpt": "plan/decision-audit/06-document-a-runnable-audit-example-and-freeze-the.md"
+  },
+  "final_full_gate": {
+    "command": "PTCG_PYTHON=<same approved CPU environment> env -u PTCG_ENGINE_DIR plan gate decision-audit 8",
+    "exit_code": 0,
+    "seconds": 21,
+    "groups_ran": 10,
+    "failed": 0,
+    "skipped": 0,
+    "record": "plan/decision-audit/08-freeze-final-local-source-evidence-after-reviewe.md",
+    "record_sha256": "0b9a0b207e8e10af66265e52cc06fda1b651da04c05ac30a07da80cca08c7572",
+    "implementation_commit": "29af384e88fee1b9f1d679d268f09c533ac1ef05"
+  },
+  "source_review": {
+    "scope": "fresh bounded read-only source review, not release certification",
+    "findings": [
+      "startup/refused-deck cleanup",
+      "deep JSON source-line diagnostic"
+    ],
+    "both_reproduced_and_repaired": true,
+    "repair_followup": "Same bounded reviewer re-read29af384 repairs/tests: no remaining causal defects in the two repairs; source review only."
+  },
+  "real_engine": "NOT_RUN",
+  "competition_weights_corpus_archive": "not recovered in bounded named-path check; no global absence claim",
+  "training_gpu_historical_gate_runs": 0
+}

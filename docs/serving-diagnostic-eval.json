@@ -1,0 +1,163 @@
+{
+  "protocol": {
+    "scope": "CPU-only random model/encoded features, not game/strength/performance evaluation",
+    "same_seed": 0,
+    "boards": 8,
+    "reference": "masked",
+    "modes": [
+      "masked",
+      "unmasked",
+      "no-state-mask",
+      "no-option-mask",
+      "no-relations"
+    ],
+    "witness_criterion": {
+      "score_below": 0.0001,
+      "choice_disagreements": 0
+    },
+    "boundary_rows": 64,
+    "same_wrong_reference_control": true
+  },
+  "paired_same_work_results": [
+    {
+      "serving_mode": "masked",
+      "result": "PASS",
+      "max_abs_error": 8.260142762839262e-08,
+      "choice_disagreements": 0,
+      "first_mismatch": null,
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    },
+    {
+      "serving_mode": "unmasked",
+      "result": "MISMATCH",
+      "max_abs_error": 0.03391529598635479,
+      "choice_disagreements": 0,
+      "first_mismatch": {
+        "row": 0,
+        "option_count": 2,
+        "max_abs_error": 0.0027931212051509613,
+        "max_gap_option": 1,
+        "reference_choice": 1,
+        "serving_choice": 1,
+        "reference_logits": [
+          0.04690209776163101,
+          0.29499396681785583
+        ],
+        "serving_logits": [
+          0.04445900674711645,
+          0.2922008456127049
+        ],
+        "passed": false,
+        "menu_choice_valid": true
+      },
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    },
+    {
+      "serving_mode": "no-state-mask",
+      "result": "MISMATCH",
+      "max_abs_error": 0.026124355953229136,
+      "choice_disagreements": 0,
+      "first_mismatch": {
+        "row": 0,
+        "option_count": 2,
+        "max_abs_error": 0.014666371040325699,
+        "max_gap_option": 1,
+        "reference_choice": 1,
+        "serving_choice": 1,
+        "reference_logits": [
+          0.04690209776163101,
+          0.29499396681785583
+        ],
+        "serving_logits": [
+          0.035522947350522,
+          0.28032759577753014
+        ],
+        "passed": false,
+        "menu_choice_valid": true
+      },
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    },
+    {
+      "serving_mode": "no-option-mask",
+      "result": "MISMATCH",
+      "max_abs_error": 0.03062247296822873,
+      "choice_disagreements": 0,
+      "first_mismatch": {
+        "row": 0,
+        "option_count": 2,
+        "max_abs_error": 0.0033412188491486194,
+        "max_gap_option": 1,
+        "reference_choice": 1,
+        "serving_choice": 1,
+        "reference_logits": [
+          0.04690209776163101,
+          0.29499396681785583
+        ],
+        "serving_logits": [
+          0.0472903339997429,
+          0.29833518566700445
+        ],
+        "passed": false,
+        "menu_choice_valid": true
+      },
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    },
+    {
+      "serving_mode": "no-relations",
+      "result": "MISMATCH",
+      "max_abs_error": 0.0235202348158583,
+      "choice_disagreements": 0,
+      "first_mismatch": {
+        "row": 0,
+        "option_count": 2,
+        "max_abs_error": 0.01302488644330313,
+        "max_gap_option": 1,
+        "reference_choice": 1,
+        "serving_choice": 1,
+        "reference_logits": [
+          0.04690209776163101,
+          0.29499396681785583
+        ],
+        "serving_logits": [
+          0.050683058788235535,
+          0.30801885326115896
+        ],
+        "passed": false,
+        "menu_choice_valid": true
+      },
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    }
+  ],
+  "boundary64": {
+    "result": "PASS",
+    "max_abs_error": 8.3198879868851e-08,
+    "choice_disagreements": 0
+  },
+  "same_unmasked_reference": {
+    "result": "PASS",
+    "historical_training_verified": false
+  },
+  "runtime": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "torch": "2.13.0",
+    "device": "cpu",
+    "fixture_dtype": "float32"
+  },
+  "source_sha256": {
+    "demo/serving_diagnostic.py": "b2bdb220c162d55e3860e400d42a8501ef6d717d4e919d329077aea320b89ea2",
+    "demo/model_demo.py": "a67198da1c9fd2e939c5704ab346cf78c87b0ab28a1ab9c32c42866c614324f2",
+    "imitation/tests_torch/synthetic.py": "e96d15d9dda727de516be9a67238cc8249e6620d10146cb1f876d181e487273b",
+    "imitation/training/model_ss.py": "28d0dd66349db07b49ca90acb70fd21a3dbe9e7e6e6731bbc85fe7af60aaba92",
+    "imitation/training/train_ss.py": "7b76b5453a2f9daa6f9d98055df6825196bb9552583f604aef036e68b74c1090",
+    "imitation/serving/main_v7.py": "64c11a1261db7165c840b6da032d1369ce14aafbd6dd9337d6fa38aa71403278",
+    "imitation/gates/gate_compute_parity.py": "cf17ce0646b5f9150cecbebc3937afffe200fa11dd7ee9a93f8de65b53cab165"
+  },
+  "performance_claim": null,
+  "before_cpu_guard_preserved": "serving-diagnostic-eval-before-cpu-guard.json"
+}

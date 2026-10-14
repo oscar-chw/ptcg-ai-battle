@@ -12,6 +12,10 @@ leaderboard, score 709.1** (read on 2026-09-13 and recorded as final).
 How the parts connect: the engine feeds the imitation line that was submitted; PPO and search
 are branches that were measured and never shipped; the verification suite checks both.
 
+The stdlib [decision auditor](docs/decision-audit.md) validates an issued menu and locates invalid trace lines without the engine.
+The [CPU diagnostic](docs/serving-diagnostic.md) exposes the first Torch/NumPy score discrepancy on seeded synthetic fixtures.
+Neither tool demonstrates competition-agent playing strength.
+
 ```mermaid
 flowchart TB
   subgraph SIDE["Off the submitted path: measured only"]
@@ -165,10 +169,11 @@ Intervals are nominal Wilson 95%; nothing here is synthetic. Full table, negativ
 ## Quick start
 
 ```bash
-bash scripts/demo.sh    # no engine, stdlib python3: recomputes the results table and
-                        # fails unless it equals results/analysis_output.txt
+bash scripts/demo.sh    # stdlib report reproduction; fails if the committed table differs
 bash scripts/check.sh   # every suite that runs without the engine; one it cannot run is SKIPPED
-PTCG_PYTHON=/path/to/python-with-numpy-torch-pytest bash scripts/demo.sh   # + model demo
+python3 demo/audit_trace.py demo/examples/decision-menu.synthetic.jsonl  # independent menu audit
+PTCG_PYTHON=/path/to/python-with-numpy-and-torch  # reuse your approved environment
+"$PTCG_PYTHON" demo/serving_diagnostic.py --boards 8  # actual CPU forward comparison, synthetic fixture
 PTCG_ENGINE_DIR=/path/to/sample_submission python3 demo/run_match.py --games 1000
 ```
 
@@ -237,13 +242,9 @@ missing-mask defect behind the false green, and a teammate wrote the deck-scrapi
 deck-analysis code. Team write-up: [Kaggle strategy track](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle-challenge-strategy/writeups/from-imitation-to-reliable-play-a-ptcg-agent-stud).
 Methods are credited in [REFERENCES.md](report/REFERENCES.md) and [RESEARCH.md](ppo/docs/RESEARCH.md).
 
-Licence, split by authorship: the root MIT [LICENSE](LICENSE) covers Oscar's parts only (`ppo/`,
-`demo/`, `scripts/`, `figures/`, `.github/`, `engine/README.md`, `docs/DIAGRAMS.md`,
-`docs/gpu-prototype.md`, `docs/README.md` and this README). `imitation/` and `report/` are the
-team's and carry their own all-rights-reserved `LICENSE` files until the team agrees a licence;
-the rest of `results/` and `docs/` records the team's work and is not MIT either. The engine
-(`LicenseRef-PTCG-ABC-Competition-Use-Only`) is read from `PTCG_ENGINE_DIR` and not included.
-Pokémon names are third-party trademarks; no artwork, card text or engine files are included.
+Licensing follows authorship: Oscar's named parts are MIT; team imitation/report content remains
+all-rights-reserved, and the competition-only engine is not included. See the exact
+[licence scope and exclusions](docs/licensing.md); no artwork or card text is distributed.
 
 Implemented with AI coding agents under Oscar's design and review: they implemented this
 repository's consolidation, tests, demo and write-ups.
