@@ -1,0 +1,21 @@
+{
+  "scope": "in-memory mutated comparison only, canonical source/checks unchanged",
+  "control": "valid vectors PASS after source restoration",
+  "mutants": {
+    "ignore-choice-drift": {
+      "killed": true,
+      "failures": 1,
+      "errors": 0
+    },
+    "replace-first-with-last": {
+      "killed": true,
+      "failures": 1,
+      "errors": 0
+    },
+    "launder-score-threshold": {
+      "killed": true,
+      "failures": 1,
+      "errors": 0
+    }
+  }
+}

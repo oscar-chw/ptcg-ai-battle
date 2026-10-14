@@ -1,0 +1,73 @@
+{
+  "schema": "ptcg-serving-diagnostic-local-evidence/v1",
+  "source_revision": "bdaf344dba4503ab0d1205913a81de88aca345dd",
+  "base": "2db4490ed2ee9ef8be032076df8799d6c0736470",
+  "state": "PASS_AUTHOR_LOCAL_ONLY",
+  "independent_source_review": "PASS_SCOPED_ROOT_REVIEW",
+  "independent_root_successor_acceptance": {
+    "state": "PASS_SCOPED_LOCAL_ROOT_ACCEPTANCE",
+    "source_revision": "bdaf344dba4503ab0d1205913a81de88aca345dd",
+    "excerpt": "serving-diagnostic-root-acceptance.json",
+    "receipt_file": "root-ptcg-serving-bdaf344-20261014.json",
+    "receipt_sha256": "ac0c433f31d96066cfe92302548d78620edbbbf1380d703bfdd27ab9f882dd51"
+  },
+  "predecessor_root_acceptance": {
+    "revision": "2db4490ed2ee9ef8be032076df8799d6c0736470",
+    "receipt": "root-ptcg-2db4490-20261014.json",
+    "scope": "Original10-group no-engine/numeric acceptance only; does not cover this successor."
+  },
+  "commands": [
+    {
+      "command": "python3 -m unittest discover -s demo/tests -p test_serving_contract.py",
+      "result": "7 cases passed in0.197s; focused CLI/comparison acceptance (also collected by unchanged full gate)",
+      "exit_code": 0
+    },
+    {
+      "command": "PTCG_PYTHON=<approved CPU numeric environment> plan gate decision-audit 9",
+      "result": "8 cases passed,2.925s after retained caller-default failure",
+      "exit_code": 0,
+      "receipt": "plan/decision-audit/09-add-bounded-cpu-serving-diagnostic-with-differen.md"
+    },
+    {
+      "command": "env -u PTCG_ENGINE_DIR PTCG_PYTHON=../../Codex/projects/ptcg-ai-competition/.venv/bin/python plan gate decision-audit 10",
+      "result": "10 groups,0failed,0skipped;21s after last source/test change",
+      "exit_code": 0,
+      "receipt": "plan/decision-audit/10-freeze-serving-diagnostic-examples-learning-prov.md"
+    },
+    {
+      "command": "../_venvs/ctp/bin/python -m ruff check --config ruff.toml .",
+      "result": "All checks passed",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "result": "No whitespace errors",
+      "exit_code": 0
+    }
+  ],
+  "source_sha256": {
+    "demo/serving_diagnostic.py": "b2bdb220c162d55e3860e400d42a8501ef6d717d4e919d329077aea320b89ea2",
+    "demo/model_demo.py": "a67198da1c9fd2e939c5704ab346cf78c87b0ab28a1ab9c32c42866c614324f2",
+    "imitation/tests_torch/synthetic.py": "e96d15d9dda727de516be9a67238cc8249e6620d10146cb1f876d181e487273b",
+    "imitation/training/model_ss.py": "28d0dd66349db07b49ca90acb70fd21a3dbe9e7e6e6731bbc85fe7af60aaba92",
+    "imitation/training/train_ss.py": "7b76b5453a2f9daa6f9d98055df6825196bb9552583f604aef036e68b74c1090",
+    "imitation/serving/main_v7.py": "64c11a1261db7165c840b6da032d1369ce14aafbd6dd9337d6fa38aa71403278",
+    "imitation/gates/gate_compute_parity.py": "cf17ce0646b5f9150cecbebc3937afffe200fa11dd7ee9a93f8de65b53cab165"
+  },
+  "protected_predecessor_files_unchanged": 25,
+  "paired_mode_eval": "serving-diagnostic-eval.json",
+  "mutation_evidence": "serving-diagnostic-mutations.json",
+  "failure_preservation": {
+    "caller_defaults": "Node9 retained FAIL1error then PASS8cases; raw local record plus public path-prefix redaction hash",
+    "before_cpu_guard_eval": "serving-diagnostic-eval-before-cpu-guard.json"
+  },
+  "not_run": [
+    "real-engine games or replay",
+    "historical trained-model/weights/corpus reproduction",
+    "teacher/training/GPU jobs or admission gates",
+    "performance benchmark",
+    "remote CI on unpublished successor",
+    "public release"
+  ],
+  "attribution": "Original MIT diagnostic/report/tests/docs around unchanged team-owned kernels; licensing and authorship preserved."
+}

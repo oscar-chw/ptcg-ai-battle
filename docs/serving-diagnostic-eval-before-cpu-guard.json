@@ -1,0 +1,118 @@
+{
+  "protocol": {
+    "scope": "CPU-only random model/encoded features, not game/strength/performance evaluation",
+    "same_seed": 0,
+    "boards": 8,
+    "reference": "masked",
+    "modes": [
+      "masked",
+      "unmasked",
+      "no-state-mask",
+      "no-option-mask",
+      "no-relations"
+    ],
+    "witness_criterion": {
+      "score_below": 0.0001,
+      "choice_disagreements": 0
+    },
+    "boundary_rows": 64,
+    "same_wrong_reference_control": true
+  },
+  "paired_same_work_results": [
+    {
+      "serving_mode": "masked",
+      "result": "PASS",
+      "control": "PASS",
+      "max_abs_error": 8.260142762839262e-08,
+      "choice_disagreements": 0,
+      "first_mismatch": null,
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    },
+    {
+      "serving_mode": "unmasked",
+      "result": "MISMATCH",
+      "control": "PASS",
+      "max_abs_error": 0.03391529598635479,
+      "choice_disagreements": 0,
+      "first_mismatch": {
+        "row": 0,
+        "option": 1,
+        "reference_choice": 1,
+        "serving_choice": 1
+      },
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    },
+    {
+      "serving_mode": "no-state-mask",
+      "result": "MISMATCH",
+      "control": "PASS",
+      "max_abs_error": 0.026124355953229136,
+      "choice_disagreements": 0,
+      "first_mismatch": {
+        "row": 0,
+        "option": 1,
+        "reference_choice": 1,
+        "serving_choice": 1
+      },
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    },
+    {
+      "serving_mode": "no-option-mask",
+      "result": "MISMATCH",
+      "control": "PASS",
+      "max_abs_error": 0.03062247296822873,
+      "choice_disagreements": 0,
+      "first_mismatch": {
+        "row": 0,
+        "option": 1,
+        "reference_choice": 1,
+        "serving_choice": 1
+      },
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    },
+    {
+      "serving_mode": "no-relations",
+      "result": "MISMATCH",
+      "control": "PASS",
+      "max_abs_error": 0.0235202348158583,
+      "choice_disagreements": 0,
+      "first_mismatch": {
+        "row": 0,
+        "option": 1,
+        "reference_choice": 1,
+        "serving_choice": 1
+      },
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579"
+    }
+  ],
+  "boundary64": {
+    "result": "PASS",
+    "max_abs_error": 8.3198879868851e-08,
+    "choice_disagreements": 0
+  },
+  "same_unmasked_reference": {
+    "result": "PASS",
+    "historical_training_verified": false
+  },
+  "runtime": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "torch": "2.13.0",
+    "device": "cpu"
+  },
+  "source_sha256": {
+    "demo/serving_diagnostic.py": "0ca3689fe406809d87ff50106976cb052ae7bf9e3dbcf185ad278e300638c87e",
+    "demo/model_demo.py": "a67198da1c9fd2e939c5704ab346cf78c87b0ab28a1ab9c32c42866c614324f2",
+    "imitation/tests_torch/synthetic.py": "e96d15d9dda727de516be9a67238cc8249e6620d10146cb1f876d181e487273b",
+    "imitation/training/model_ss.py": "28d0dd66349db07b49ca90acb70fd21a3dbe9e7e6e6731bbc85fe7af60aaba92",
+    "imitation/training/train_ss.py": "7b76b5453a2f9daa6f9d98055df6825196bb9552583f604aef036e68b74c1090",
+    "imitation/serving/main_v7.py": "64c11a1261db7165c840b6da032d1369ce14aafbd6dd9337d6fa38aa71403278",
+    "imitation/gates/gate_compute_parity.py": "cf17ce0646b5f9150cecbebc3937afffe200fa11dd7ee9a93f8de65b53cab165"
+  },
+  "performance_claim": null
+}

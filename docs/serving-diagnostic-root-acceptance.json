@@ -1,0 +1,77 @@
+{
+  "status": "PASS_SCOPED_LOCAL_ROOT_ACCEPTANCE",
+  "revision": "bdaf344dba4503ab0d1205913a81de88aca345dd",
+  "exit_code": 0,
+  "checked_at": "2026-10-14T13:42:25.243527+00:00",
+  "source_unchanged": true,
+  "protected_predecessor_files": 25,
+  "archive_sha256": "0ac97a48694e48fe95e4ca638127d323d7b6fd0965487e1450734389ccf400b3",
+  "isolated_archive": true,
+  "engine_environment_unset": true,
+  "independent_controls": [
+    {
+      "mode": "masked",
+      "exit_code": 0,
+      "result": "PASS",
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579",
+      "max_abs_error": 8.260142762839262e-08,
+      "choice_disagreements": 0
+    },
+    {
+      "mode": "unmasked",
+      "exit_code": 1,
+      "result": "MISMATCH",
+      "input_sha256": "ce26ecbfc9909cf51c802646dead84599fc7e672e209511993d4c6427bdbbf61",
+      "weight_sha256": "f8ee4528a9de48d3782b04a31e8f734fddd7a7cb4da30ae92ad0cb0925ceb579",
+      "max_abs_error": 0.03391529598635479,
+      "choice_disagreements": 0
+    }
+  ],
+  "review": "Read complete new diagnostic, both additive suites, numeric workflow and existing check.sh. Compared actual Torch/NumPy output with matched-mode control, preserved identical fixtures for mismatch/recovery, and independently checked full score discrepancy despite matching choices.",
+  "limits": [
+    "Random seeded synthetic features/weights on CPU only",
+    "No trained model, legal game, engine match, competition strength or throughput claim",
+    "No training/GPU work, remoteCI or public release",
+    "Held independent-release controls remain held"
+  ],
+  "receipt_file": "root-ptcg-serving-bdaf344-20261014.json",
+  "receipt_sha256": "ac0c433f31d96066cfe92302548d78620edbbbf1380d703bfdd27ab9f882dd51",
+  "root_commands": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "demo/tests",
+        "-p",
+        "test_serving_contract.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.434
+    },
+    {
+      "command": [
+        "<approved CPU numeric environment>/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "demo/tests_numeric"
+      ],
+      "exit_code": 0,
+      "seconds": 2.535
+    },
+    {
+      "command": [
+        "bash",
+        "scripts/check.sh"
+      ],
+      "exit_code": 0,
+      "seconds": 21.53
+    }
+  ],
+  "scope": "Portable excerpt of independent root receipt. Only local interpreter prefix redacted; original receipt SHA256 binds the full record."
+}
