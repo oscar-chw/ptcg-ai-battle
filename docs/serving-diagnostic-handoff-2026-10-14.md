@@ -5,7 +5,9 @@ Source revision: `bdaf344dba4503ab0d1205913a81de88aca345dd` on
 `2db4490ed2ee9ef8be032076df8799d6c0736470`; its separate root acceptance covers
 only its original no-engine/numeric scope. Root independently accepted this
 successor at the exact source revision above; [receipt excerpt](serving-diagnostic-root-acceptance.json)
-binds the original receipt SHA256. No push or public release has occurred.
+binds the original receipt SHA256. At this14October checkpoint no push or public
+release had occurred. [PR #1](https://github.com/oscar-chw/ptcg-ai-battle/pull/1)
+now carries the review-branch proposal; main remains unmerged.
 
 The [runnable diagnostic](serving-diagnostic.md) compares the actual Torch
 reference with the existing NumPy forward, using identical seeded random
@@ -62,5 +64,15 @@ The API temporarily changes collator globals and supports separate CLI processes
 not concurrent calls in one process. Fixtures are synthetic encoded features,
 not legal games. Real-engine games/replay, trained-model/corpus reproduction,
 teacher/training/GPU work, performance measurement, remote CI and release remain
-NOT_RUN. No older teacher, thermal, independent-release or publication gate is
+NOT_RUN at that local checkpoint. Current exact-head remote CI/Codex review is
+recorded in PR #1 and does not replace any engine or release approval.
+No older teacher, thermal, independent-release or publication gate is
 cleared by this work.
+
+15October compatibility repair: the PR review found parser-dependent deep-JSON
+diagnosis. An explicit256-level guard, mixed-container/quoted-input boundaries and
+a permissive-decoder witness were added without changing existing tests/checks.
+The [repair evidence](decision-audit-nesting-evidence.json) retains3red regressions,
+39passing demo tests and two failed auxiliary probes that were stopped and never
+promoted as acceptance. The additional Python3.14 workflow checks the actual
+reported platform; the current PR head and review/check results govern acceptance.

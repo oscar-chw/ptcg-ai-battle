@@ -94,7 +94,8 @@ PTCG_PYTHON="$PTCG_PYTHON" bash scripts/check.sh
 
 The additional workflow `.github/workflows/serving-diagnostic.yml` runs the numerical command
 and normal diagnostic on CPU; the original CI/check scripts are unchanged. Remote CI for this
-unpublished successor is **NOT_RUN**. [Recorded bounded witnesses](serving-diagnostic-eval.json)
+local14October checkpoint was **NOT_RUN**. Current exact-head CI and Codex review are
+reported in [PR #1](https://github.com/oscar-chw/ptcg-ai-battle/pull/1). [Recorded bounded witnesses](serving-diagnostic-eval.json)
 include all5serving modes on identical inputs/weights, a64-row boundary and same-unmasked
 reference control. They contain no optimization or performance claim.
 

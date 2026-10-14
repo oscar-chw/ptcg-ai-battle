@@ -7,6 +7,7 @@ from collections import Counter
 from typing import Iterable
 
 SCHEMA = "ptcg-decision/v1"
+MAX_JSON_DEPTH = 256
 
 
 class DecisionError(ValueError):
@@ -101,6 +102,27 @@ def _invalid_constant(value: str) -> None:
     raise DecisionError(f"invalid JSON numeric constant {value}")
 
 
+def _enforce_json_depth(line: str) -> None:
+    # Decoder recursion differs across Python versions; enforce the trace budget before decoding.
+    depth, quoted, escaped = 0, False, False
+    for char in line:
+        if quoted:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                quoted = False
+        elif char == '"':
+            quoted = True
+        elif char in "[{":
+            depth += 1
+            if depth > MAX_JSON_DEPTH:
+                raise DecisionError(f"JSON nesting exceeds trace limit {MAX_JSON_DEPTH}")
+        elif char in "]}":
+            depth -= 1
+
+
 def audit_lines(lines: Iterable[str], source: str) -> dict:
     agents: dict[str, Counter] = {}
     decisions = 0
@@ -108,6 +130,7 @@ def audit_lines(lines: Iterable[str], source: str) -> dict:
         if not line.strip():
             continue
         try:
+            _enforce_json_depth(line)
             entry = _mapping(json.loads(line, object_pairs_hook=_unique_fields,
                                         parse_constant=_invalid_constant), "record")
             if entry.get("schema") != SCHEMA:

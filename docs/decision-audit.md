@@ -7,6 +7,10 @@ It checks the supplied menu's field types, observer seat, ongoing-decision state
 indices and index range. The official engine still checks card rules, dependencies between choices
 and game transitions; the auditor does not execute those rules.
 
+Trace records allow at most256nested object/array levels. The guard runs before
+JSON decoding, ignores quoted brackets and reports the source line on overflow;
+it does not rely on a Python-version-specific recursion error.
+
 ## Run without an engine or model
 
 ```bash

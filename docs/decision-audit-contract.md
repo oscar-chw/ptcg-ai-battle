@@ -28,3 +28,10 @@ Examples and tests are original hand-authored selection menus, labelled SYNTHETI
 contain engine files/card tables or represent real competition games. The engine-installed run
 and historical teacher/training gates stay unrun by this task. No new scientific result or
 public claim is approved by a successful local software audit.
+
+Compatibility repair,15October2026: JSONL records have an explicit maximum of256
+object/array levels. The guard runs before decoding, counts mixed containers and
+ignores quoted brackets/escaped quotes. This exceeds the declared menu schema's
+depth while keeping excessive-input diagnostics independent of decoder recursion.
+Existing acceptance assertions remain unchanged; additive boundary controls cover
+256/257levels and a decoder that completes the original10,000-level array.

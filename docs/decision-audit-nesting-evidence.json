@@ -1,0 +1,27 @@
+{
+  "finding_url": "https://github.com/oscar-chw/ptcg-ai-battle/pull/1#discussion_r4274596460",
+  "initial_pr_head": "2b1f3fca6b48c0a7aafe2b8349e578ed2502b1b1",
+  "red_reproduction": {
+    "command": "python3 -m unittest discover -s demo/tests -p test_json_nesting.py",
+    "cases": 5,
+    "failures": 3,
+    "errors": 0,
+    "witness": "Native decoder boundary admissions plus permissive-decoder completion reproduced the missing depth guard. Local Python3.14 was unavailable."
+  },
+  "green_control": {
+    "new_cases": 5,
+    "all_demo_cases": 39,
+    "result": "PASS",
+    "gate": "plan gate decision-audit15;exit0,39tests9.487s"
+  },
+  "auxiliary_mutation_probes": {
+    "state": "FAIL_NOT_PROMOTED",
+    "attempt1": "Assertion-only/no-errors probe aborted on count-quoted-brackets mutant:0assertion failures,1DecisionError from a valid quoted-input test.",
+    "attempt2": "Same unchanged probe assertion aborted on reject-boundary mutant:0assertion failures,1DecisionError from the valid256-level test.",
+    "resolution": "Stop auxiliary probes after two failures. No probe assertion, existing test or gate was changed; these attempts are not acceptance evidence."
+  },
+  "depth_budget": 256,
+  "source_sha256": "bce3587228c0fc9b6d67d0ce554fe414e44f8c8ede9a27da70cf8bc117835bd2",
+  "new_ci": "Additional decision-audit.yml runs all demo/tests on actual Python3.14; remote result pending at this local snapshot.",
+  "scope": "Compatibility/input diagnosis only; original tests/checks unchanged, no game/model/training/playing-strength claim."
+}
